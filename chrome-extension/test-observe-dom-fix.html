@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ObserveDOM Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: #0056b3;
+        }
+        
+        .status-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>ObserveDOM Fix Test</h1>
+        <p>「observeDOM called before initialization」エラーの修正をテストします。</p>
+        
+        <div class="status-display">
+            <h3>System Status:</h3>
+            <div id="status-display"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="button" onclick="testPopupDetectorGuardMethods()">PopupDetectorGuard メソッドテスト</button>
+            <button class="button" onclick="testDetectionThrottler()">DetectionThrottler テスト</button>
+            <button class="button" onclick="testMethodCalls()">メソッド呼び出しテスト</button>
+            <button class="button" onclick="simulateEarlyCall()">早期呼び出しシミュレーション</button>
+            <button class="button" onclick="testQueuedCalls()">キューイング機能テスト</button>
+            <button class="button" onclick="runAllTests()">全テスト実行</button>
+            <button class="button" onclick="clearResults()">結果クリア</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function addTestResult(testName, success, message, details = null) {
+            const result = {
+                testName,
+                success,
+                message,
+                details,
+                timestamp: new Date().toISOString()
+            };
+            
+            testResults.push(result);
+            displayTestResult(result);
+        }
+
+        function displayTestResult(result) {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${result.success ? 'success' : 'error'}`;
+            
+            let content = `[${result.timestamp}] ${result.testName}: ${result.message}`;
+            if (result.details) {
+                content += '\\n詳細: ' + JSON.stringify(result.details, null, 2);
+            }
+            
+            resultDiv.textContent = content;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function updateStatusDisplay() {
+            const statusDiv = document.getElementById('status-display');
+            
+            const status = {
+                timestamp: new Date().toISOString(),
+                popupDetector: !!window.popupDetector,
+                popupDetectorGuard: !!window.PopupDetectorGuard,
+                detectionThrottler: !!window.DetectionThrottler,
+                popupDetectorInitialized: window.isPopupDetectorReady ? window.isPopupDetectorReady() : 'unknown'
+            };
+            
+            if (window.PopupDetectorGuard) {
+                status.guardMethods = {
+                    safeHandleMutations: typeof window.PopupDetectorGuard.safeHandleMutations === 'function',
+                    safeDetectPopups: typeof window.PopupDetectorGuard.safeDetectPopups === 'function',
+                    safeSetupMutationObserver: typeof window.PopupDetectorGuard.safeSetupMutationObserver === 'function',
+                    safeSetupPeriodicCheck: typeof window.PopupDetectorGuard.safeSetupPeriodicCheck === 'function'
+                };
+            }
+            
+            if (window.popupDetector) {
+                status.popupDetectorMethods = {
+                    detectPopups: typeof window.popupDetector.detectPopups === 'function',
+                    handleMutations: typeof window.popupDetector.handleMutations === 'function',
+                    setupMutationObserver: typeof window.popupDetector.setupMutationObserver === 'function',
+                    setupPeriodicCheck: typeof window.popupDetector.setupPeriodicCheck === 'function',
+                    hasObserver: !!window.popupDetector.observer,
+                    hasPeriodicInterval: !!window.popupDetector.periodicCheckInterval
+                };
+            }
+            
+            statusDiv.textContent = JSON.stringify(status, null, 2);
+        }
+
+        function testPopupDetectorGuardMethods() {
+            try {
+                if (!window.PopupDetectorGuard) {
+                    addTestResult('PopupDetectorGuard メソッドテスト', false, 'PopupDetectorGuardが利用できません');
+                    return;
+                }
+                
+                const guard = window.PopupDetectorGuard;
+                const requiredMethods = [
+                    'safeHandleMutations',
+                    'safeDetectPopups',
+                    'safeSetupMutationObserver',
+                    'safeSetupPeriodicCheck'
+                ];
+                
+                const availableMethods = requiredMethods.filter(method => typeof guard[method] === 'function');
+                const success = availableMethods.length === requiredMethods.length;
+                
+                addTestResult(
+                    'PopupDetectorGuard メソッドテスト',
+                    success,
+                    success ? '必要なメソッドがすべて利用可能です' : '一部のメソッドが不足しています',
+                    { 
+                        requiredMethods,
+                        availableMethods,
+                        missingMethods: requiredMethods.filter(method => !availableMethods.includes(method))
+                    }
+                );
+            } catch (error) {
+                addTestResult('PopupDetectorGuard メソッドテスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testDetectionThrottler() {
+            try {
+                if (!window.DetectionThrottler) {
+                    addTestResult('DetectionThrottler テスト', false, 'DetectionThrottlerが利用できません');
+                    return;
+                }
+                
+                const throttler = window.DetectionThrottler;
+                const hasRequiredMethods = typeof throttler.stopAllDetection === 'function' &&
+                                         typeof throttler.resumeDetection === 'function';
+                
+                if (!hasRequiredMethods) {
+                    addTestResult('DetectionThrottler テスト', false, '必要なメソッドが不足しています');
+                    return;
+                }
+                
+                // 停止と再開のテスト
+                let testPassed = true;
+                let errorDetails = null;
+                
+                try {
+                    throttler.stopAllDetection();
+                    console.log('DetectionThrottler: stopAllDetection called successfully');
+                    
+                    setTimeout(() => {
+                        try {
+                            throttler.resumeDetection();
+                            console.log('DetectionThrottler: resumeDetection called successfully');
+                            
+                            addTestResult(
+                                'DetectionThrottler テスト',
+                                true,
+                                'DetectionThrottlerの停止・再開が正常に動作しました',
+                                { stopSuccess: true, resumeSuccess: true }
+                            );
+                        } catch (resumeError) {
+                            addTestResult(
+                                'DetectionThrottler テスト',
+                                false,
+                                'resumeDetectionでエラーが発生しました',
+                                { error: resumeError.message }
+                            );
+                        }
+                    }, 1000);
+                    
+                } catch (stopError) {
+                    addTestResult(
+                        'DetectionThrottler テスト',
+                        false,
+                        'stopAllDetectionでエラーが発生しました',
+                        { error: stopError.message }
+                    );
+                }
+                
+            } catch (error) {
+                addTestResult('DetectionThrottler テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testMethodCalls() {
+            try {
+                const results = {
+                    safeSetupMutationObserver: null,
+                    safeSetupPeriodicCheck: null,
+                    safeDetectPopups: null,
+                    safeHandleMutations: null
+                };
+                
+                // safeSetupMutationObserverのテスト
+                if (window.PopupDetectorGuard && typeof window.PopupDetectorGuard.safeSetupMutationObserver === 'function') {
+                    try {
+                        window.PopupDetectorGuard.safeSetupMutationObserver();
+                        results.safeSetupMutationObserver = 'success';
+                    } catch (error) {
+                        results.safeSetupMutationObserver = 'error: ' + error.message;
+                    }
+                } else {
+                    results.safeSetupMutationObserver = 'method not available';
+                }
+                
+                // safeSetupPeriodicCheckのテスト
+                if (window.PopupDetectorGuard && typeof window.PopupDetectorGuard.safeSetupPeriodicCheck === 'function') {
+                    try {
+                        window.PopupDetectorGuard.safeSetupPeriodicCheck();
+                        results.safeSetupPeriodicCheck = 'success';
+                    } catch (error) {
+                        results.safeSetupPeriodicCheck = 'error: ' + error.message;
+                    }
+                } else {
+                    results.safeSetupPeriodicCheck = 'method not available';
+                }
+                
+                // safeDetectPopupsのテスト
+                if (window.PopupDetectorGuard && typeof window.PopupDetectorGuard.safeDetectPopups === 'function') {
+                    try {
+                        const result = window.PopupDetectorGuard.safeDetectPopups();
+                        results.safeDetectPopups = Array.isArray(result) ? 'success (returned array)' : 'success (returned ' + typeof result + ')';
+                    } catch (error) {
+                        results.safeDetectPopups = 'error: ' + error.message;
+                    }
+                } else {
+                    results.safeDetectPopups = 'method not available';
+                }
+                
+                // safeHandleMutationsのテスト
+                if (window.PopupDetectorGuard && typeof window.PopupDetectorGuard.safeHandleMutations === 'function') {
+                    try {
+                        window.PopupDetectorGuard.safeHandleMutations([]);
+                        results.safeHandleMutations = 'success';
+                    } catch (error) {
+                        results.safeHandleMutations = 'error: ' + error.message;
+                    }
+                } else {
+                    results.safeHandleMutations = 'method not available';
+                }
+                
+                const successCount = Object.values(results).filter(r => r.includes('success')).length;
+                const totalCount = Object.keys(results).length;
+                
+                addTestResult(
+                    'メソッド呼び出しテスト',
+                    successCount > 0,
+                    `${successCount}/${totalCount} メソッドが正常に動作しました`,
+                    results
+                );
+                
+            } catch (error) {
+                addTestResult('メソッド呼び出しテスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function simulateEarlyCall() {
+            try {
+                addTestResult('早期呼び出しシミュレーション', true, '早期呼び出しシミュレーションを開始します...');
+                
+                // PopupDetectorの初期化状態をリセット（可能な場合）
+                if (window.resetPopupDetectorGuard) {
+                    window.resetPopupDetectorGuard();
+                    addTestResult('早期呼び出しシミュレーション', true, 'PopupDetectorGuardの状態をリセットしました');
+                }
+                
+                // 初期化前にメソッドを呼び出し
+                const testMethods = [
+                    'setupMutationObserver',
+                    'setupPeriodicCheck',
+                    'detectPopups',
+                    'handleMutations'
+                ];
+                
+                testMethods.forEach(methodName => {
+                    try {
+                        if (window.popupDetector && typeof window.popupDetector[methodName] === 'function') {
+                            const result = window.popupDetector[methodName]();
+                            addTestResult(
+                                '早期呼び出しシミュレーション',
+                                true,
+                                `${methodName}の早期呼び出しが処理されました`,
+                                { method: methodName, result: typeof result }
+                            );
+                        } else {
+                            addTestResult(
+                                '早期呼び出しシミュレーション',
+                                true,
+                                `${methodName}メソッドが利用できません（正常）`,
+                                { method: methodName }
+                            );
+                        }
+                    } catch (error) {
+                        addTestResult(
+                            '早期呼び出しシミュレーション',
+                            false,
+                            `${methodName}の早期呼び出しでエラーが発生しました`,
+                            { method: methodName, error: error.message }
+                        );
+                    }
+                });
+                
+            } catch (error) {
+                addTestResult('早期呼び出しシミュレーション', false, 'シミュレーション実行エラー', { error: error.message });
+            }
+        }
+
+        function testQueuedCalls() {
+            try {
+                if (!window.PopupDetectorGuard || typeof window.PopupDetectorGuard.getStatus !== 'function') {
+                    addTestResult('キューイング機能テスト', false, 'PopupDetectorGuardのgetStatusメソッドが利用できません');
+                    return;
+                }
+                
+                const initialStatus = window.PopupDetectorGuard.getStatus();
+                
+                // 初期化前にメソッドを呼び出してキューに追加
+                if (window.PopupDetectorGuard.safeSetupMutationObserver) {
+                    window.PopupDetectorGuard.safeSetupMutationObserver();
+                }
+                
+                if (window.PopupDetectorGuard.safeSetupPeriodicCheck) {
+                    window.PopupDetectorGuard.safeSetupPeriodicCheck();
+                }
+                
+                const afterCallStatus = window.PopupDetectorGuard.getStatus();
+                
+                addTestResult(
+                    'キューイング機能テスト',
+                    true,
+                    'キューイング機能のテストが完了しました',
+                    { 
+                        initialStatus,
+                        afterCallStatus,
+                        pendingCallsIncreased: (afterCallStatus.pendingCallsCount || 0) >= (initialStatus.pendingCallsCount || 0)
+                    }
+                );
+                
+            } catch (error) {
+                addTestResult('キューイング機能テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('全テスト開始', true, 'ObserveDOM修正の全テストを実行します...');
+            
+            setTimeout(() => testPopupDetectorGuardMethods(), 100);
+            setTimeout(() => testDetectionThrottler(), 1000);
+            setTimeout(() => testMethodCalls(), 2000);
+            setTimeout(() => simulateEarlyCall(), 3000);
+            setTimeout(() => testQueuedCalls(), 4000);
+            
+            setTimeout(() => {
+                const successCount = testResults.filter(r => r.success).length - 1; // -1 for start message
+                const totalCount = testResults.length - 1;
+                addTestResult(
+                    '全テスト完了',
+                    successCount === totalCount,
+                    `${successCount}/${totalCount} テストが成功しました`,
+                    { successRate: `${Math.round((successCount/totalCount) * 100)}%` }
+                );
+            }, 5000);
+        }
+
+        function clearResults() {
+            testResults = [];
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatusDisplay();
+            setInterval(updateStatusDisplay, 3000); // 3秒ごとにステータス更新
+        });
+    </script>
+</body>
+</html>

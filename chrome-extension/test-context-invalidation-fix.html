@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context Invalidation Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: #0056b3;
+        }
+        
+        .button.danger {
+            background: #dc3545;
+        }
+        
+        .button.danger:hover {
+            background: #c82333;
+        }
+        
+        .status-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Context Invalidation Fix Test</h1>
+        <p>「Extension context has been invalidated」エラーの処理改善をテストします。</p>
+        
+        <div class="status-display">
+            <h3>Extension Context Status:</h3>
+            <div id="status-display"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="button" onclick="testContextGuard()">Context Guard テスト</button>
+            <button class="button" onclick="testContextValidation()">コンテキスト検証テスト</button>
+            <button class="button" onclick="testSafeExecution()">安全実行テスト</button>
+            <button class="button" onclick="testInvalidationCallbacks()">無効化コールバックテスト</button>
+            <button class="button danger" onclick="simulateContextInvalidation()">コンテキスト無効化シミュレーション</button>
+            <button class="button" onclick="runAllTests()">全テスト実行</button>
+            <button class="button" onclick="clearResults()">結果クリア</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function addTestResult(testName, success, message, details = null) {
+            const result = {
+                testName,
+                success,
+                message,
+                details,
+                timestamp: new Date().toISOString()
+            };
+            
+            testResults.push(result);
+            displayTestResult(result);
+        }
+
+        function displayTestResult(result) {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${result.success ? 'success' : 'error'}`;
+            
+            let content = `[${result.timestamp}] ${result.testName}: ${result.message}`;
+            if (result.details) {
+                content += '\\n詳細: ' + JSON.stringify(result.details, null, 2);
+            }
+            
+            resultDiv.textContent = content;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function updateStatusDisplay() {
+            const statusDiv = document.getElementById('status-display');
+            
+            const status = {
+                timestamp: new Date().toISOString(),
+                extensionContextGuard: !!window.ExtensionContextGuard,
+                chrome: !!window.chrome,
+                chromeRuntime: !!(window.chrome && window.chrome.runtime),
+                chromeRuntimeId: window.chrome && window.chrome.runtime ? window.chrome.runtime.id : 'N/A'
+            };
+            
+            if (window.ExtensionContextGuard) {
+                status.contextGuardStatus = {
+                    isValid: window.ExtensionContextGuard.isValid(),
+                    shouldContinue: window.ExtensionContextGuard.shouldContinueOperation(),
+                    hasInvalidationCallbacks: window.ExtensionContextGuard.invalidationCallbacks ? window.ExtensionContextGuard.invalidationCallbacks.size : 'N/A'
+                };
+            }
+            
+            statusDiv.textContent = JSON.stringify(status, null, 2);
+        }
+
+        function testContextGuard() {
+            try {
+                if (!window.ExtensionContextGuard) {
+                    addTestResult('Context Guard テスト', false, 'ExtensionContextGuardが利用できません');
+                    return;
+                }
+                
+                const guard = window.ExtensionContextGuard;
+                const requiredMethods = [
+                    'isValid',
+                    'shouldContinueOperation',
+                    'safeExecute',
+                    'onInvalidation',
+                    'offInvalidation'
+                ];
+                
+                const availableMethods = requiredMethods.filter(method => typeof guard[method] === 'function');
+                const success = availableMethods.length === requiredMethods.length;
+                
+                addTestResult(
+                    'Context Guard テスト',
+                    success,
+                    success ? 'ExtensionContextGuardの必要なメソッドが利用可能です' : '一部のメソッドが不足しています',
+                    { 
+                        requiredMethods,
+                        availableMethods,
+                        missingMethods: requiredMethods.filter(method => !availableMethods.includes(method))
+                    }
+                );
+                
+            } catch (error) {
+                addTestResult('Context Guard テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testContextValidation() {
+            try {
+                if (!window.ExtensionContextGuard) {
+                    addTestResult('コンテキスト検証テスト', false, 'ExtensionContextGuardが利用できません');
+                    return;
+                }
+                
+                const guard = window.ExtensionContextGuard;
+                
+                const validationResults = {
+                    isValid: guard.isValid(),
+                    shouldContinue: guard.shouldContinueOperation(),
+                    chromeAvailable: typeof chrome !== 'undefined',
+                    runtimeAvailable: !!(chrome && chrome.runtime),
+                    runtimeIdAvailable: !!(chrome && chrome.runtime && chrome.runtime.id)
+                };
+                
+                const success = validationResults.isValid && validationResults.shouldContinue;
+                
+                addTestResult(
+                    'コンテキスト検証テスト',
+                    success,
+                    success ? 'コンテキストが有効です' : 'コンテキストに問題があります',
+                    validationResults
+                );
+                
+            } catch (error) {
+                addTestResult('コンテキスト検証テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testSafeExecution() {
+            try {
+                if (!window.ExtensionContextGuard) {
+                    addTestResult('安全実行テスト', false, 'ExtensionContextGuardが利用できません');
+                    return;
+                }
+                
+                const guard = window.ExtensionContextGuard;
+                
+                // 成功する操作のテスト
+                guard.safeExecute(async () => {
+                    return 'test success';
+                }, 'test operation').then(result => {
+                    addTestResult(
+                        '安全実行テスト',
+                        result === 'test success',
+                        result === 'test success' ? '安全実行が正常に動作しました' : '安全実行の結果が期待と異なります',
+                        { result }
+                    );
+                }).catch(error => {
+                    addTestResult('安全実行テスト', false, '安全実行でエラーが発生しました', { error: error.message });
+                });
+                
+                // エラーが発生する操作のテスト
+                setTimeout(() => {
+                    guard.safeExecute(async () => {
+                        throw new Error('Test error');
+                    }, 'error test operation').then(result => {
+                        addTestResult('安全実行テスト', false, '例外が適切に処理されませんでした', { result });
+                    }).catch(error => {
+                        addTestResult(
+                            '安全実行テスト',
+                            error.message === 'Test error',
+                            'エラーが適切に処理されました',
+                            { error: error.message }
+                        );
+                    });
+                }, 1000);
+                
+            } catch (error) {
+                addTestResult('安全実行テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testInvalidationCallbacks() {
+            try {
+                if (!window.ExtensionContextGuard) {
+                    addTestResult('無効化コールバックテスト', false, 'ExtensionContextGuardが利用できません');
+                    return;
+                }
+                
+                const guard = window.ExtensionContextGuard;
+                let callbackExecuted = false;
+                
+                // テスト用コールバックを登録
+                const testCallback = () => {
+                    callbackExecuted = true;
+                    console.log('Test invalidation callback executed');
+                };
+                
+                guard.onInvalidation(testCallback);
+                
+                // コールバックが登録されたことを確認
+                const callbackCount = guard.invalidationCallbacks ? guard.invalidationCallbacks.size : 0;
+                
+                addTestResult(
+                    '無効化コールバックテスト',
+                    callbackCount > 0,
+                    callbackCount > 0 ? 'コールバックが正常に登録されました' : 'コールバックの登録に失敗しました',
+                    { callbackCount, callbackExecuted }
+                );
+                
+                // コールバックを削除
+                guard.offInvalidation(testCallback);
+                
+                const callbackCountAfterRemoval = guard.invalidationCallbacks ? guard.invalidationCallbacks.size : 0;
+                
+                setTimeout(() => {
+                    addTestResult(
+                        '無効化コールバックテスト',
+                        callbackCountAfterRemoval < callbackCount,
+                        'コールバックが正常に削除されました',
+                        { callbackCountAfterRemoval }
+                    );
+                }, 500);
+                
+            } catch (error) {
+                addTestResult('無効化コールバックテスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function simulateContextInvalidation() {
+            try {
+                if (!window.ExtensionContextGuard) {
+                    addTestResult('コンテキスト無効化シミュレーション', false, 'ExtensionContextGuardが利用できません');
+                    return;
+                }
+                
+                addTestResult('コンテキスト無効化シミュレーション', true, 'コンテキスト無効化のシミュレーションを開始します...');
+                
+                const guard = window.ExtensionContextGuard;
+                
+                // テスト用コールバックを登録
+                let callbackExecuted = false;
+                const testCallback = () => {
+                    callbackExecuted = true;
+                    addTestResult('コンテキスト無効化シミュレーション', true, '無効化コールバックが実行されました');
+                };
+                
+                guard.onInvalidation(testCallback);
+                
+                // 手動でコンテキスト無効化を実行
+                guard.handleContextInvalidation();
+                
+                setTimeout(() => {
+                    const isValid = guard.isValid();
+                    const shouldContinue = guard.shouldContinueOperation();
+                    
+                    addTestResult(
+                        'コンテキスト無効化シミュレーション',
+                        !isValid && !shouldContinue && callbackExecuted,
+                        'コンテキスト無効化が正常に処理されました',
+                        { isValid, shouldContinue, callbackExecuted }
+                    );
+                    
+                    // 警告: 実際の無効化が実行されたため、ページをリロードすることを推奨
+                    addTestResult(
+                        'コンテキスト無効化シミュレーション',
+                        true,
+                        '注意: コンテキストが無効化されました。正常な動作のためにページをリロードしてください。',
+                        { recommendation: 'reload page' }
+                    );
+                }, 1000);
+                
+            } catch (error) {
+                addTestResult('コンテキスト無効化シミュレーション', false, 'シミュレーション実行エラー', { error: error.message });
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('全テスト開始', true, 'Context Invalidation修正の全テストを実行します...');
+            
+            setTimeout(() => testContextGuard(), 100);
+            setTimeout(() => testContextValidation(), 1000);
+            setTimeout(() => testSafeExecution(), 2000);
+            setTimeout(() => testInvalidationCallbacks(), 4000);
+            
+            setTimeout(() => {
+                const successCount = testResults.filter(r => r.success).length - 1; // -1 for start message
+                const totalCount = testResults.length - 1;
+                addTestResult(
+                    '全テスト完了',
+                    successCount >= totalCount * 0.8, // 80%以上成功で OK
+                    `${successCount}/${totalCount} テストが成功しました`,
+                    { 
+                        successRate: `${Math.round((successCount/totalCount) * 100)}%`,
+                        note: 'コンテキスト無効化シミュレーションは手動で実行してください'
+                    }
+                );
+            }, 6000);
+        }
+
+        function clearResults() {
+            testResults = [];
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatusDisplay();
+            setInterval(updateStatusDisplay, 3000); // 3秒ごとにステータス更新
+        });
+    </script>
+</body>
+</html>

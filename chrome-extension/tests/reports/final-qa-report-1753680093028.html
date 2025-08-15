@@ -1,0 +1,723 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最終品質保証テストレポート</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .summary { display: flex; gap: 20px; margin-bottom: 20px; }
+        .metric { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; flex: 1; }
+        .test-result { margin-bottom: 15px; padding: 15px; border-radius: 8px; }
+        .passed { background: #d4edda; border: 1px solid #c3e6cb; }
+        .failed { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .recommendation { padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .ready { background: #d4edda; }
+        .not-ready { background: #f8d7da; }
+        .needs-review { background: #fff3cd; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>最終品質保証テストレポート</h1>
+        <p>実行日時: 2025-07-28T05:21:33.028Z</p>
+        <p>実行時間: 34.96秒</p>
+    </div>
+
+    <div class="summary">
+        <div class="metric">
+            <h3>総テスト数</h3>
+            <p style="font-size: 24px; margin: 0;">10</p>
+        </div>
+        <div class="metric">
+            <h3>成功</h3>
+            <p style="font-size: 24px; margin: 0; color: green;">6</p>
+        </div>
+        <div class="metric">
+            <h3>失敗</h3>
+            <p style="font-size: 24px; margin: 0; color: red;">4</p>
+        </div>
+        <div class="metric">
+            <h3>成功率</h3>
+            <p style="font-size: 24px; margin: 0;">60.0%</p>
+        </div>
+    </div>
+
+    <h2>テスト結果詳細</h2>
+    
+        <div class="test-result passed">
+            <h3>environment_validation ✅</h3>
+            <p>実行時間: 577ms</p>
+            <p>9/9 検証項目が成功</p>
+        </div>
+    
+        <div class="test-result failed">
+            <h3>unit_tests ❌</h3>
+            <p>実行時間: 14228ms</p>
+            <p>spawnSync C:\WINDOWS\system32\cmd.exe ENOBUFS</p>
+        </div>
+    
+        <div class="test-result failed">
+            <h3>integration_tests ❌</h3>
+            <p>実行時間: 2643ms</p>
+            <p>Command failed: npm run test:integration
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In F:\Work\ad_closer\chrome-extension
+  84 files checked.
+  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches
+  testPathIgnorePatterns: \\node_modules\\ - 84 matches
+  testRegex:  - 0 matches
+Pattern: F:\Work\ad_closer\chrome-extension\tests\integration\component-communication.test.js - 0 matches
+Command failed: npx jest "F:\Work\ad_closer\chrome-extension\tests\integration\component-communication.test.js" --json --verbose
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In F:\Work\ad_closer\chrome-extension
+  84 files checked.
+  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches
+  testPathIgnorePatterns: \\node_modules\\ - 84 matches
+  testRegex:  - 0 matches
+Pattern: F:\Work\ad_closer\chrome-extension\tests\integration\component-communication.test.js - 0 matches
+
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In F:\Work\ad_closer\chrome-extension
+  84 files checked.
+  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches
+  testPathIgnorePatterns: \\node_modules\\ - 84 matches
+  testRegex:  - 0 matches
+Pattern: F:\Work\ad_closer\chrome-extension\tests\integration\extension-lifecycle.test.js - 0 matches
+Command failed: npx jest "F:\Work\ad_closer\chrome-extension\tests\integration\extension-lifecycle.test.js" --json --verbose
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In F:\Work\ad_closer\chrome-extension
+  84 files checked.
+  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches
+  testPathIgnorePatterns: \\node_modules\\ - 84 matches
+  testRegex:  - 0 matches
+Pattern: F:\Work\ad_closer\chrome-extension\tests\integration\extension-lifecycle.test.js - 0 matches
+
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In F:\Work\ad_closer\chrome-extension
+  84 files checked.
+  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches
+  testPathIgnorePatterns: \\node_modules\\ - 84 matches
+  testRegex:  - 0 matches
+Pattern: F:\Work\ad_closer\chrome-extension\tests\integration\cross-website-functionality.test.js - 0 matches
+Command failed: npx jest "F:\Work\ad_closer\chrome-extension\tests\integration\cross-website-functionality.test.js" --json --verbose
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In F:\Work\ad_closer\chrome-extension
+  84 files checked.
+  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches
+  testPathIgnorePatterns: \\node_modules\\ - 84 matches
+  testRegex:  - 0 matches
+Pattern: F:\Work\ad_closer\chrome-extension\tests\integration\cross-website-functionality.test.js - 0 matches
+
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In F:\Work\ad_closer\chrome-extension
+  84 files checked.
+  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches
+  testPathIgnorePatterns: \\node_modules\\ - 84 matches
+  testRegex:  - 0 matches
+Pattern: F:\Work\ad_closer\chrome-extension\tests\integration\performance-memory.test.js - 0 matches
+Command failed: npx jest "F:\Work\ad_closer\chrome-extension\tests\integration\performance-memory.test.js" --json --verbose
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In F:\Work\ad_closer\chrome-extension
+  84 files checked.
+  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches
+  testPathIgnorePatterns: \\node_modules\\ - 84 matches
+  testRegex:  - 0 matches
+Pattern: F:\Work\ad_closer\chrome-extension\tests\integration\performance-memory.test.js - 0 matches
+
+</p>
+        </div>
+    
+        <div class="test-result failed">
+            <h3>ui_tests ❌</h3>
+            <p>実行時間: 15938ms</p>
+            <p>Command failed: npm run test:ui-components
+PASS ./popup-ui.test.js
+  ポップアップインターフェースのテスト
+    √ ポップアップUIの初期化 (5 ms)
+    √ トグルスイッチの動作 (3 ms)
+    √ 統計表示の更新 (1 ms)
+    √ ホワイトリスト機能 (1 ms)
+    √ 設定ページの開く (2 ms)
+    √ エラーハンドリング (1 ms)
+    √ UIの破棄 (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       7 passed, 7 total
+Snapshots:   0 total
+Time:        0.589 s
+Ran all test suites matching /popup-ui.test.js/i.
+FAIL ./options-ui.test.js (10.308 s)
+  設定ページのインタラクションテスト
+    √ 設定UIの初期化 (5 ms)
+    √ 設定値の表示 (1 ms)
+    √ ホワイトリストドメインの追加 (2 ms)
+    √ 無効なドメインの検証 (2 ms)
+    √ 設定の保存 (2 ms)
+    √ 設定のリセット (4 ms)
+    √ 設定のエクスポート (1 ms)
+    × 設定のインポート (10015 ms)
+
+  ● 設定ページのインタラクションテスト › 設定のインポート
+
+    thrown: "Exceeded timeout of 10000 ms for a test.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 540 |[39m   })[33m;[39m
+     [90m 541 |[39m
+    [31m[1m>[22m[39m[90m 542 |[39m   test([32m'設定のインポート'[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m     |[39m   [31m[1m^[22m[39m
+     [90m 543 |[39m     [36mawait[39m optionsUI[33m.[39minit()[33m;[39m
+     [90m 544 |[39m
+     [90m 545 |[39m     [36mconst[39m mockFile [33m=[39m [36mnew[39m [33mFile[39m([[32m'{"version":"1.0","preferences":{"extensionEnabled":false}}'[39m][33m,[39m [32m'settings.json'[39m)[33m;[39m[0m
+
+      at test (tests/options-ui.test.js:542:3)
+      at Object.describe (tests/options-ui.test.js:14:1)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 7 passed, 8 total
+Snapshots:   0 total
+Time:        10.622 s
+Ran all test suites matching /options-ui.test.js/i.
+❌ 設定ページUIテスト失敗:
+Command failed: npx jest options-ui.test.js --verbose --no-cache
+FAIL ./notification-ui.test.js
+  通知システムのUIテスト
+    × 通知システムの初期化 (4 ms)
+    × 通知の表示 (1 ms)
+    × 重複通知の防止 (1 ms)
+    × 自動削除タイマー (1 ms)
+    × ユーザー決定の処理 - 閉じる (1 ms)
+    × ユーザー決定の処理 - 保持 (1 ms)
+    × 通知の手動削除
+    × すべての通知のクリア
+    × テキストのサニタイズ (1 ms)
+    × 通知システムの破棄
+    × エラーハンドリング - API通信失敗 (1 ms)
+    × 通知要素のイベントリスナー設定 (1 ms)
+
+  ● 通知システムのUIテスト › 通知システムの初期化
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:266:20)
+
+  ● 通知システムのUIテスト › 通知の表示
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:274:20)
+
+  ● 通知システムのUIテスト › 重複通知の防止
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:291:20)
+
+  ● 通知システムのUIテスト › 自動削除タイマー
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:310:20)
+
+  ● 通知システムのUIテスト › ユーザー決定の処理 - 閉じる
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:331:20)
+
+  ● 通知システムのUIテスト › ユーザー決定の処理 - 保持
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:355:20)
+
+  ● 通知システムのUIテスト › 通知の手動削除
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:379:20)
+
+  ● 通知システムのUIテスト › すべての通知のクリア
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:396:20)
+
+  ● 通知システムのUIテスト › テキストのサニタイズ
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:413:20)
+
+  ● 通知システムのUIテスト › 通知システムの破棄
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:423:20)
+
+  ● 通知システムのUIテスト › エラーハンドリング - API通信失敗
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:442:20)
+
+  ● 通知システムのUIテスト › 通知要素のイベントリスナー設定
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 84 |[39m
+     [90m 85 |[39m       [90m// ページに追加[39m
+    [31m[1m>[22m[39m[90m 86 |[39m       document[33m.[39mbody[33m.[39mappendChild([36mthis[39m[33m.[39mnotificationContainer)[33m;[39m
+     [90m    |[39m                     [31m[1m^[22m[39m
+     [90m 87 |[39m     }
+     [90m 88 |[39m
+     [90m 89 |[39m     [90m/**[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)
+      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)
+      at Object.init (tests/notification-ui.test.js:451:20)
+
+Test Suites: 1 failed, 1 total
+Tests:       12 failed, 12 total
+Snapshots:   0 total
+Time:        0.639 s
+Ran all test suites matching /notification-ui.test.js/i.
+❌ 通知システムテスト失敗:
+Command failed: npx jest notification-ui.test.js --verbose --no-cache
+FAIL ./accessibility.test.js
+  アクセシビリティ機能のテスト
+    × アクセシビリティヘルパーの初期化 (8 ms)
+    × フォーカス可能な要素の検出 (2 ms)
+    × Tabキーナビゲーション (2 ms)
+    × Shift+Tabキーナビゲーション (1 ms)
+    × Enterキーでのアクティベーション (1 ms)
+    × Escapeキーでの通知閉鎖
+    × 矢印キーナビゲーション (1 ms)
+    × ARIAラベルの自動追加 (1 ms)
+    × ライブリージョンの作成 (1 ms)
+    × スクリーンリーダーへのアナウンス (1 ms)
+    × 高コントラストモードの検出
+    × フォーカスインジケーターの強化
+    √ キーボードナビゲーションの切り替え (1 ms)
+    √ 要素の表示状態チェック (1 ms)
+    × アクセシビリティ機能の破棄
+    √ キーボードナビゲーション無効時の動作 (1 ms)
+
+  ● アクセシビリティ機能のテスト › アクセシビリティヘルパーの初期化
+
+    expect(received).toHaveBeenCalledWith(...expected)
+
+    Matcher error: received value must be a mock or spy function
+
+    Received has type:  function
+    Received has value: [Function addEventListener]
+
+    [0m [90m 335 |[39m     accessibilityHelper[33m.[39minit()[33m;[39m
+     [90m 336 |[39m
+    [31m[1m>[22m[39m[90m 337 |[39m     expect(document[33m.[39maddEventListener)[33m.[39mtoHaveBeenCalledWith([32m'keydown'[39m[33m,[39m expect[33m.[39many([33mFunction[39m))[33m;[39m
+     [90m     |[39m                                       [31m[1m^[22m[39m
+     [90m 338 |[39m   })[33m;[39m
+     [90m 339 |[39m
+     [90m 340 |[39m   test([32m'フォーカス可能な要素の検出'[39m[33m,[39m () [33m=>[39m {[0m
+
+      at Object.toHaveBeenCalledWith (tests/accessibility.test.js:337:39)
+
+  ● アクセシビリティ機能のテスト › フォーカス可能な要素の検出
+
+    TypeError: document.querySelectorAll.mockReturnValue is not a function
+
+    [0m [90m 345 |[39m
+     [90m 346 |[39m     [90m// querySelectorAllのモック実装[39m
+    [31m[1m>[22m[39m[90m 347 |[39m     document[33m.[39mquerySelectorAll[33m.[39mmockReturnValue([button[33m,[39m input[33m,[39m disabledButton])[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 348 |[39m
+     [90m 349 |[39m     accessibilityHelper[33m.[39mupdateFocusableElements()[33m;[39m
+     [90m 350 |[39m[0m
+
+      at Object.mockReturnValue (tests/accessibility.test.js:347:31)
+
+  ● アクセシビリティ機能のテスト › Tabキーナビゲーション
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+    [0m [90m 371 |[39m     accessibilityHelper[33m.[39mhandleTabNavigation(tabEvent)[33m;[39m
+     [90m 372 |[39m
+    [31m[1m>[22m[39m[90m 373 |[39m     expect(accessibilityHelper[33m.[39mcurrentFocusIndex)[33m.[39mtoBe([35m1[39m)[33m;[39m
+     [90m     |[39m                                                   [31m[1m^[22m[39m
+     [90m 374 |[39m     expect(button2[33m.[39mfocus)[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m 375 |[39m     expect(tabEvent[33m.[39mpreventDefault)[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m 376 |[39m   })[33m;[39m[0m
+
+      at Object.toBe (tests/accessibility.test.js:373:51)
+
+  ● アクセシビリティ機能のテスト › Shift+Tabキーナビゲーション
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+    [0m [90m 391 |[39m     accessibilityHelper[33m.[39mhandleTabNavigation(shiftTabEvent)[33m;[39m
+     [90m 392 |[39m
+    [31m[1m>[22m[39m[90m 393 |[39m     expect(accessibilityHelper[33m.[39mcurrentFocusIndex)[33m.[39mtoBe([35m0[39m)[33m;[39m
+     [90m     |[39m                                                   [31m[1m^[22m[39m
+     [90m 394 |[39m     expect(button1[33m.[39mfocus)[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m 395 |[39m     expect(shiftTabEvent[33m.[39mpreventDefault)[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m 396 |[39m   })[33m;[39m[0m
+
+      at Object.toBe (tests/accessibility.test.js:393:51)
+
+  ● アクセシビリティ機能のテスト › Enterキーでのアクティベーション
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+    [0m [90m 407 |[39m     accessibilityHelper[33m.[39mhandleActivation(enterEvent)[33m;[39m
+     [90m 408 |[39m
+    [31m[1m>[22m[39m[90m 409 |[39m     expect(button[33m.[39mclick)[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m     |[39m                          [31m[1m^[22m[39m
+     [90m 410 |[39m     expect(enterEvent[33m.[39mpreventDefault)[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m 411 |[39m   })[33m;[39m
+     [90m 412 |[39m[0m
+
+      at Object.toHaveBeenCalled (tests/accessibility.test.js:409:26)
+
+  ● アクセシビリティ機能のテスト › Escapeキーでの通知閉鎖
+
+    TypeError: document.querySelectorAll.mockReturnValue is not a function
+
+    [0m [90m 416 |[39m     
+     [90m 417 |[39m     notification[33m.[39mquerySelector [33m=[39m jest[33m.[39mfn()[33m.[39mmockReturnValue(closeButton)[33m;[39m
+    [31m[1m>[22m[39m[90m 418 |[39m     document[33m.[39mquerySelectorAll[33m.[39mmockReturnValue([notification])[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 419 |[39m
+     [90m 420 |[39m     [36mconst[39m escapeEvent [33m=[39m {
+     [90m 421 |[39m       key[33m:[39m [32m'Escape'[39m[33m,[39m[0m
+
+      at Object.mockReturnValue (tests/accessibility.test.js:418:31)
+
+  ● アクセシビリティ機能のテスト › 矢印キーナビゲーション
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+    [0m [90m 452 |[39m     accessibilityHelper[33m.[39mhandleArrowNavigation(arrowDownEvent)[33m;[39m
+     [90m 453 |[39m
+    [31m[1m>[22m[39m[90m 454 |[39m     expect(button2[33m.[39mfocus)[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m     |[39m                           [31m[1m^[22m[39m
+     [90m 455 |[39m     expect(arrowDownEvent[33m.[39mpreventDefault)[33m.[39mtoHaveBeenCalled()[33m;[39m
+     [90m 456 |[39m   })[33m;[39m
+     [90m 457 |[39m[0m
+
+      at Object.toHaveBeenCalled (tests/accessibility.test.js:454:27)
+
+  ● アクセシビリティ機能のテスト › ARIAラベルの自動追加
+
+    TypeError: document.querySelectorAll.mockReturnValueOnce is not a function
+
+    [0m [90m 461 |[39m     
+     [90m 462 |[39m     document[33m.[39mquerySelectorAll
+    [31m[1m>[22m[39m[90m 463 |[39m       [33m.[39mmockReturnValueOnce([button]) [90m// buttons query[39m
+     [90m     |[39m        [31m[1m^[22m[39m
+     [90m 464 |[39m       [33m.[39mmockReturnValueOnce([input])[33m;[39m [90m// inputs query[39m
+     [90m 465 |[39m
+     [90m 466 |[39m     accessibilityHelper[33m.[39maddAriaLabelsToElements()[33m;[39m[0m
+
+      at Object.mockReturnValueOnce (tests/accessibility.test.js:463:8)
+
+  ● アクセシビリティ機能のテスト › ライブリージョンの作成
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 253 |[39m       })[33m;[39m
+     [90m 254 |[39m
+    [31m[1m>[22m[39m[90m 255 |[39m       document[33m.[39mbody[33m.[39mappendChild(liveRegion)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 256 |[39m       [36mreturn[39m liveRegion[33m;[39m
+     [90m 257 |[39m     }
+     [90m 258 |[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at AccessibilityHelper.appendChild [as createLiveRegion] (tests/accessibility.test.js:255:21)
+      at Object.createLiveRegion (tests/accessibility.test.js:473:44)
+
+  ● アクセシビリティ機能のテスト › スクリーンリーダーへのアナウンス
+
+    TypeError: document.getElementById.mockReturnValue is not a function
+
+    [0m [90m 481 |[39m   test([32m'スクリーンリーダーへのアナウンス'[39m[33m,[39m () [33m=>[39m {
+     [90m 482 |[39m     [36mconst[39m liveRegion [33m=[39m createMockElement([32m'div'[39m[33m,[39m { id[33m:[39m [32m'popup-blocker-live-region'[39m })[33m;[39m
+    [31m[1m>[22m[39m[90m 483 |[39m     document[33m.[39mgetElementById[33m.[39mmockReturnValue(liveRegion)[33m;[39m
+     [90m     |[39m                             [31m[1m^[22m[39m
+     [90m 484 |[39m
+     [90m 485 |[39m     accessibilityHelper[33m.[39mannounceToScreenReader([32m'テストメッセージ'[39m)[33m;[39m
+     [90m 486 |[39m[0m
+
+      at Object.mockReturnValue (tests/accessibility.test.js:483:29)
+
+  ● アクセシビリティ機能のテスト › 高コントラストモードの検出
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 279 |[39m       })[33m;[39m
+     [90m 280 |[39m       
+    [31m[1m>[22m[39m[90m 281 |[39m       document[33m.[39mbody[33m.[39mappendChild(testElement)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 282 |[39m       
+     [90m 283 |[39m       [90m// 実際の実装では、計算されたスタイルをチェック[39m
+     [90m 284 |[39m       [36mconst[39m isHighContrast [33m=[39m [36mfalse[39m[33m;[39m [90m// モックでは常にfalse[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at AccessibilityHelper.appendChild [as detectHighContrastMode] (tests/accessibility.test.js:281:21)
+      at Object.detectHighContrastMode (tests/accessibility.test.js:491:48)
+
+  ● アクセシビリティ機能のテスト › フォーカスインジケーターの強化
+
+    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+
+    [0m [90m 306 |[39m       })[33m;[39m
+     [90m 307 |[39m
+    [31m[1m>[22m[39m[90m 308 |[39m       document[33m.[39mhead[33m.[39mappendChild(style)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 309 |[39m       document[33m.[39mbody[33m.[39mclassList[33m.[39madd([32m'popup-blocker-focus-enhanced'[39m)[33m;[39m
+     [90m 310 |[39m     }
+     [90m 311 |[39m[0m
+
+      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+      at HTMLHeadElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+      at AccessibilityHelper.appendChild [as enhanceFocusIndicators] (tests/accessibility.test.js:308:21)
+      at Object.enhanceFocusIndicators (tests/accessibility.test.js:499:25)
+
+  ● アクセシビリティ機能のテスト › アクセシビリティ機能の破棄
+
+    TypeError: document.getElementById.mockReturnValue is not a function
+
+    [0m [90m 527 |[39m   test([32m'アクセシビリティ機能の破棄'[39m[33m,[39m () [33m=>[39m {
+     [90m 528 |[39m     [36mconst[39m liveRegion [33m=[39m createMockElement([32m'div'[39m[33m,[39m { id[33m:[39m [32m'popup-blocker-live-region'[39m })[33m;[39m
+    [31m[1m>[22m[39m[90m 529 |[39m     document[33m.[39mgetElementById[33m.[39mmockReturnValue(liveRegion)[33m;[39m
+     [90m     |[39m                             [31m[1m^[22m[39m
+     [90m 530 |[39m
+     [90m 531 |[39m     accessibilityHelper[33m.[39mdestroy()[33m;[39m
+     [90m 532 |[39m[0m
+
+      at Object.mockReturnValue (tests/accessibility.test.js:529:29)
+
+Test Suites: 1 failed, 1 total
+Tests:       13 failed, 3 passed, 16 total
+Snapshots:   0 total
+Time:        0.675 s
+Ran all test suites matching /accessibility.test.js/i.
+❌ アクセシビリティテスト失敗:
+Command failed: npx jest accessibility.test.js --verbose --no-cache
+</p>
+        </div>
+    
+        <div class="test-result passed">
+            <h3>performance_tests ✅</h3>
+            <p>実行時間: 0ms</p>
+            <p>4/4 パフォーマンステストが成功</p>
+        </div>
+    
+        <div class="test-result failed">
+            <h3>security_tests ❌</h3>
+            <p>実行時間: 1572ms</p>
+            <p>3/4 セキュリティテストが成功</p>
+        </div>
+    
+        <div class="test-result passed">
+            <h3>compatibility_tests ✅</h3>
+            <p>実行時間: 0ms</p>
+            <p>3/3 互換性テストが成功</p>
+        </div>
+    
+        <div class="test-result passed">
+            <h3>e2e_tests ✅</h3>
+            <p>実行時間: 0ms</p>
+            <p>2/2 E2Eテストが成功</p>
+        </div>
+    
+        <div class="test-result passed">
+            <h3>regression_tests ✅</h3>
+            <p>実行時間: 0ms</p>
+            <p>2/2 回帰テストが成功</p>
+        </div>
+    
+        <div class="test-result passed">
+            <h3>final_validation ✅</h3>
+            <p>実行時間: 0ms</p>
+            <p>3/3 最終検証が成功</p>
+        </div>
+    
+
+    <div class="recommendation needs-review">
+        <h2>推奨事項</h2>
+        <p><strong>ステータス:</strong> needs_review</p>
+        <p>いくつかのテストが失敗していますが、リリースブロッカーではありません。</p>
+        
+            <h3>必要なアクション:</h3>
+            <ul>
+                <li>undefinedの確認を推奨します</li><li>undefinedの確認を推奨します</li><li>undefinedの確認を推奨します</li><li>undefinedの確認を推奨します</li>
+            </ul>
+        
+    </div>
+
+    <div style="margin-top: 40px; text-align: center; color: #666;">
+        <p>このレポートは自動生成されました</p>
+    </div>
+</body>
+</html>
+    

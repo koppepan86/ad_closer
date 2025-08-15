@@ -1,0 +1,327 @@
+{
+  "timestamp": "2025-07-28T05:21:33.028Z",
+  "duration": 34964,
+  "summary": {
+    "total": 10,
+    "passed": 6,
+    "failed": 4,
+    "passRate": "60.0%"
+  },
+  "results": {
+    "environment_validation": {
+      "passed": true,
+      "duration": 577,
+      "validations": [
+        {
+          "name": "Node.js バージョン",
+          "passed": true,
+          "details": {
+            "version": "v22.17.1",
+            "required": ">=16.0.0"
+          }
+        },
+        {
+          "name": "npm バージョン",
+          "passed": true,
+          "details": {
+            "version": "10.9.2",
+            "required": ">=8.0.0"
+          }
+        },
+        {
+          "name": "ファイル存在確認: manifest.json",
+          "passed": true,
+          "details": {
+            "path": "manifest.json"
+          }
+        },
+        {
+          "name": "ファイル存在確認: background/service-worker.js",
+          "passed": true,
+          "details": {
+            "path": "background/service-worker.js"
+          }
+        },
+        {
+          "name": "ファイル存在確認: content/content-script.js",
+          "passed": true,
+          "details": {
+            "path": "content/content-script.js"
+          }
+        },
+        {
+          "name": "ファイル存在確認: popup/popup.html",
+          "passed": true,
+          "details": {
+            "path": "popup/popup.html"
+          }
+        },
+        {
+          "name": "ファイル存在確認: options/options.html",
+          "passed": true,
+          "details": {
+            "path": "options/options.html"
+          }
+        },
+        {
+          "name": "ファイル存在確認: package.json",
+          "passed": true,
+          "details": {
+            "path": "package.json"
+          }
+        },
+        {
+          "name": "依存関係の整合性",
+          "passed": true,
+          "details": {
+            "status": "OK"
+          }
+        }
+      ],
+      "summary": "9/9 検証項目が成功"
+    },
+    "unit_tests": {
+      "passed": false,
+      "duration": 14228,
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ENOBUFS"
+    },
+    "integration_tests": {
+      "passed": false,
+      "duration": 2643,
+      "error": "Command failed: npm run test:integration\nNo tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn F:\\Work\\ad_closer\\chrome-extension\n  84 files checked.\n  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches\n  testPathIgnorePatterns: \\\\node_modules\\\\ - 84 matches\n  testRegex:  - 0 matches\nPattern: F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\component-communication.test.js - 0 matches\nCommand failed: npx jest \"F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\component-communication.test.js\" --json --verbose\nNo tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn F:\\Work\\ad_closer\\chrome-extension\n  84 files checked.\n  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches\n  testPathIgnorePatterns: \\\\node_modules\\\\ - 84 matches\n  testRegex:  - 0 matches\nPattern: F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\component-communication.test.js - 0 matches\n\nNo tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn F:\\Work\\ad_closer\\chrome-extension\n  84 files checked.\n  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches\n  testPathIgnorePatterns: \\\\node_modules\\\\ - 84 matches\n  testRegex:  - 0 matches\nPattern: F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\extension-lifecycle.test.js - 0 matches\nCommand failed: npx jest \"F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\extension-lifecycle.test.js\" --json --verbose\nNo tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn F:\\Work\\ad_closer\\chrome-extension\n  84 files checked.\n  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches\n  testPathIgnorePatterns: \\\\node_modules\\\\ - 84 matches\n  testRegex:  - 0 matches\nPattern: F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\extension-lifecycle.test.js - 0 matches\n\nNo tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn F:\\Work\\ad_closer\\chrome-extension\n  84 files checked.\n  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches\n  testPathIgnorePatterns: \\\\node_modules\\\\ - 84 matches\n  testRegex:  - 0 matches\nPattern: F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\cross-website-functionality.test.js - 0 matches\nCommand failed: npx jest \"F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\cross-website-functionality.test.js\" --json --verbose\nNo tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn F:\\Work\\ad_closer\\chrome-extension\n  84 files checked.\n  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches\n  testPathIgnorePatterns: \\\\node_modules\\\\ - 84 matches\n  testRegex:  - 0 matches\nPattern: F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\cross-website-functionality.test.js - 0 matches\n\nNo tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn F:\\Work\\ad_closer\\chrome-extension\n  84 files checked.\n  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches\n  testPathIgnorePatterns: \\\\node_modules\\\\ - 84 matches\n  testRegex:  - 0 matches\nPattern: F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\performance-memory.test.js - 0 matches\nCommand failed: npx jest \"F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\performance-memory.test.js\" --json --verbose\nNo tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn F:\\Work\\ad_closer\\chrome-extension\n  84 files checked.\n  testMatch: **/?(*.)+(spec|test).js, **/tests/**/*.test.js, **/tests/integration/*.test.js - 32 matches\n  testPathIgnorePatterns: \\\\node_modules\\\\ - 84 matches\n  testRegex:  - 0 matches\nPattern: F:\\Work\\ad_closer\\chrome-extension\\tests\\integration\\performance-memory.test.js - 0 matches\n\n"
+    },
+    "ui_tests": {
+      "passed": false,
+      "duration": 15938,
+      "error": "Command failed: npm run test:ui-components\nPASS ./popup-ui.test.js\n  ポップアップインターフェースのテスト\n    √ ポップアップUIの初期化 (5 ms)\n    √ トグルスイッチの動作 (3 ms)\n    √ 統計表示の更新 (1 ms)\n    √ ホワイトリスト機能 (1 ms)\n    √ 設定ページの開く (2 ms)\n    √ エラーハンドリング (1 ms)\n    √ UIの破棄 (1 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       7 passed, 7 total\nSnapshots:   0 total\nTime:        0.589 s\nRan all test suites matching /popup-ui.test.js/i.\nFAIL ./options-ui.test.js (10.308 s)\n  設定ページのインタラクションテスト\n    √ 設定UIの初期化 (5 ms)\n    √ 設定値の表示 (1 ms)\n    √ ホワイトリストドメインの追加 (2 ms)\n    √ 無効なドメインの検証 (2 ms)\n    √ 設定の保存 (2 ms)\n    √ 設定のリセット (4 ms)\n    √ 設定のエクスポート (1 ms)\n    × 設定のインポート (10015 ms)\n\n  ● 設定ページのインタラクションテスト › 設定のインポート\n\n    thrown: \"Exceeded timeout of 10000 ms for a test.\n    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout.\"\n\n    \u001b[0m \u001b[90m 540 |\u001b[39m   })\u001b[33m;\u001b[39m\n     \u001b[90m 541 |\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 542 |\u001b[39m   test(\u001b[32m'設定のインポート'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n     \u001b[90m     |\u001b[39m   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 543 |\u001b[39m     \u001b[36mawait\u001b[39m optionsUI\u001b[33m.\u001b[39minit()\u001b[33m;\u001b[39m\n     \u001b[90m 544 |\u001b[39m\n     \u001b[90m 545 |\u001b[39m     \u001b[36mconst\u001b[39m mockFile \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mFile\u001b[39m([\u001b[32m'{\"version\":\"1.0\",\"preferences\":{\"extensionEnabled\":false}}'\u001b[39m]\u001b[33m,\u001b[39m \u001b[32m'settings.json'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\n      at test (tests/options-ui.test.js:542:3)\n      at Object.describe (tests/options-ui.test.js:14:1)\n\nTest Suites: 1 failed, 1 total\nTests:       1 failed, 7 passed, 8 total\nSnapshots:   0 total\nTime:        10.622 s\nRan all test suites matching /options-ui.test.js/i.\n❌ 設定ページUIテスト失敗:\nCommand failed: npx jest options-ui.test.js --verbose --no-cache\nFAIL ./notification-ui.test.js\n  通知システムのUIテスト\n    × 通知システムの初期化 (4 ms)\n    × 通知の表示 (1 ms)\n    × 重複通知の防止 (1 ms)\n    × 自動削除タイマー (1 ms)\n    × ユーザー決定の処理 - 閉じる (1 ms)\n    × ユーザー決定の処理 - 保持 (1 ms)\n    × 通知の手動削除\n    × すべての通知のクリア\n    × テキストのサニタイズ (1 ms)\n    × 通知システムの破棄\n    × エラーハンドリング - API通信失敗 (1 ms)\n    × 通知要素のイベントリスナー設定 (1 ms)\n\n  ● 通知システムのUIテスト › 通知システムの初期化\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:266:20)\n\n  ● 通知システムのUIテスト › 通知の表示\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:274:20)\n\n  ● 通知システムのUIテスト › 重複通知の防止\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:291:20)\n\n  ● 通知システムのUIテスト › 自動削除タイマー\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:310:20)\n\n  ● 通知システムのUIテスト › ユーザー決定の処理 - 閉じる\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:331:20)\n\n  ● 通知システムのUIテスト › ユーザー決定の処理 - 保持\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:355:20)\n\n  ● 通知システムのUIテスト › 通知の手動削除\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:379:20)\n\n  ● 通知システムのUIテスト › すべての通知のクリア\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:396:20)\n\n  ● 通知システムのUIテスト › テキストのサニタイズ\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:413:20)\n\n  ● 通知システムのUIテスト › 通知システムの破棄\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:423:20)\n\n  ● 通知システムのUIテスト › エラーハンドリング - API通信失敗\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:442:20)\n\n  ● 通知システムのUIテスト › 通知要素のイベントリスナー設定\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 84 |\u001b[39m\n     \u001b[90m 85 |\u001b[39m       \u001b[90m// ページに追加\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 86 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mnotificationContainer)\u001b[33m;\u001b[39m\n     \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 87 |\u001b[39m     }\n     \u001b[90m 88 |\u001b[39m\n     \u001b[90m 89 |\u001b[39m     \u001b[90m/**\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at NotificationUI.appendChild [as createNotificationContainer] (tests/notification-ui.test.js:86:21)\n      at NotificationUI.createNotificationContainer [as init] (tests/notification-ui.test.js:72:12)\n      at Object.init (tests/notification-ui.test.js:451:20)\n\nTest Suites: 1 failed, 1 total\nTests:       12 failed, 12 total\nSnapshots:   0 total\nTime:        0.639 s\nRan all test suites matching /notification-ui.test.js/i.\n❌ 通知システムテスト失敗:\nCommand failed: npx jest notification-ui.test.js --verbose --no-cache\nFAIL ./accessibility.test.js\n  アクセシビリティ機能のテスト\n    × アクセシビリティヘルパーの初期化 (8 ms)\n    × フォーカス可能な要素の検出 (2 ms)\n    × Tabキーナビゲーション (2 ms)\n    × Shift+Tabキーナビゲーション (1 ms)\n    × Enterキーでのアクティベーション (1 ms)\n    × Escapeキーでの通知閉鎖\n    × 矢印キーナビゲーション (1 ms)\n    × ARIAラベルの自動追加 (1 ms)\n    × ライブリージョンの作成 (1 ms)\n    × スクリーンリーダーへのアナウンス (1 ms)\n    × 高コントラストモードの検出\n    × フォーカスインジケーターの強化\n    √ キーボードナビゲーションの切り替え (1 ms)\n    √ 要素の表示状態チェック (1 ms)\n    × アクセシビリティ機能の破棄\n    √ キーボードナビゲーション無効時の動作 (1 ms)\n\n  ● アクセシビリティ機能のテスト › アクセシビリティヘルパーの初期化\n\n    expect(received).toHaveBeenCalledWith(...expected)\n\n    Matcher error: received value must be a mock or spy function\n\n    Received has type:  function\n    Received has value: [Function addEventListener]\n\n    \u001b[0m \u001b[90m 335 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39minit()\u001b[33m;\u001b[39m\n     \u001b[90m 336 |\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 337 |\u001b[39m     expect(document\u001b[33m.\u001b[39maddEventListener)\u001b[33m.\u001b[39mtoHaveBeenCalledWith(\u001b[32m'keydown'\u001b[39m\u001b[33m,\u001b[39m expect\u001b[33m.\u001b[39many(\u001b[33mFunction\u001b[39m))\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 338 |\u001b[39m   })\u001b[33m;\u001b[39m\n     \u001b[90m 339 |\u001b[39m\n     \u001b[90m 340 |\u001b[39m   test(\u001b[32m'フォーカス可能な要素の検出'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\u001b[0m\n\n      at Object.toHaveBeenCalledWith (tests/accessibility.test.js:337:39)\n\n  ● アクセシビリティ機能のテスト › フォーカス可能な要素の検出\n\n    TypeError: document.querySelectorAll.mockReturnValue is not a function\n\n    \u001b[0m \u001b[90m 345 |\u001b[39m\n     \u001b[90m 346 |\u001b[39m     \u001b[90m// querySelectorAllのモック実装\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 347 |\u001b[39m     document\u001b[33m.\u001b[39mquerySelectorAll\u001b[33m.\u001b[39mmockReturnValue([button\u001b[33m,\u001b[39m input\u001b[33m,\u001b[39m disabledButton])\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 348 |\u001b[39m\n     \u001b[90m 349 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39mupdateFocusableElements()\u001b[33m;\u001b[39m\n     \u001b[90m 350 |\u001b[39m\u001b[0m\n\n      at Object.mockReturnValue (tests/accessibility.test.js:347:31)\n\n  ● アクセシビリティ機能のテスト › Tabキーナビゲーション\n\n    expect(received).toBe(expected) // Object.is equality\n\n    Expected: 1\n    Received: 0\n\n    \u001b[0m \u001b[90m 371 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39mhandleTabNavigation(tabEvent)\u001b[33m;\u001b[39m\n     \u001b[90m 372 |\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 373 |\u001b[39m     expect(accessibilityHelper\u001b[33m.\u001b[39mcurrentFocusIndex)\u001b[33m.\u001b[39mtoBe(\u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                                                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 374 |\u001b[39m     expect(button2\u001b[33m.\u001b[39mfocus)\u001b[33m.\u001b[39mtoHaveBeenCalled()\u001b[33m;\u001b[39m\n     \u001b[90m 375 |\u001b[39m     expect(tabEvent\u001b[33m.\u001b[39mpreventDefault)\u001b[33m.\u001b[39mtoHaveBeenCalled()\u001b[33m;\u001b[39m\n     \u001b[90m 376 |\u001b[39m   })\u001b[33m;\u001b[39m\u001b[0m\n\n      at Object.toBe (tests/accessibility.test.js:373:51)\n\n  ● アクセシビリティ機能のテスト › Shift+Tabキーナビゲーション\n\n    expect(received).toBe(expected) // Object.is equality\n\n    Expected: 0\n    Received: 1\n\n    \u001b[0m \u001b[90m 391 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39mhandleTabNavigation(shiftTabEvent)\u001b[33m;\u001b[39m\n     \u001b[90m 392 |\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 393 |\u001b[39m     expect(accessibilityHelper\u001b[33m.\u001b[39mcurrentFocusIndex)\u001b[33m.\u001b[39mtoBe(\u001b[35m0\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                                                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 394 |\u001b[39m     expect(button1\u001b[33m.\u001b[39mfocus)\u001b[33m.\u001b[39mtoHaveBeenCalled()\u001b[33m;\u001b[39m\n     \u001b[90m 395 |\u001b[39m     expect(shiftTabEvent\u001b[33m.\u001b[39mpreventDefault)\u001b[33m.\u001b[39mtoHaveBeenCalled()\u001b[33m;\u001b[39m\n     \u001b[90m 396 |\u001b[39m   })\u001b[33m;\u001b[39m\u001b[0m\n\n      at Object.toBe (tests/accessibility.test.js:393:51)\n\n  ● アクセシビリティ機能のテスト › Enterキーでのアクティベーション\n\n    expect(jest.fn()).toHaveBeenCalled()\n\n    Expected number of calls: >= 1\n    Received number of calls:    0\n\n    \u001b[0m \u001b[90m 407 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39mhandleActivation(enterEvent)\u001b[33m;\u001b[39m\n     \u001b[90m 408 |\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 409 |\u001b[39m     expect(button\u001b[33m.\u001b[39mclick)\u001b[33m.\u001b[39mtoHaveBeenCalled()\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 410 |\u001b[39m     expect(enterEvent\u001b[33m.\u001b[39mpreventDefault)\u001b[33m.\u001b[39mtoHaveBeenCalled()\u001b[33m;\u001b[39m\n     \u001b[90m 411 |\u001b[39m   })\u001b[33m;\u001b[39m\n     \u001b[90m 412 |\u001b[39m\u001b[0m\n\n      at Object.toHaveBeenCalled (tests/accessibility.test.js:409:26)\n\n  ● アクセシビリティ機能のテスト › Escapeキーでの通知閉鎖\n\n    TypeError: document.querySelectorAll.mockReturnValue is not a function\n\n    \u001b[0m \u001b[90m 416 |\u001b[39m     \n     \u001b[90m 417 |\u001b[39m     notification\u001b[33m.\u001b[39mquerySelector \u001b[33m=\u001b[39m jest\u001b[33m.\u001b[39mfn()\u001b[33m.\u001b[39mmockReturnValue(closeButton)\u001b[33m;\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 418 |\u001b[39m     document\u001b[33m.\u001b[39mquerySelectorAll\u001b[33m.\u001b[39mmockReturnValue([notification])\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 419 |\u001b[39m\n     \u001b[90m 420 |\u001b[39m     \u001b[36mconst\u001b[39m escapeEvent \u001b[33m=\u001b[39m {\n     \u001b[90m 421 |\u001b[39m       key\u001b[33m:\u001b[39m \u001b[32m'Escape'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\n      at Object.mockReturnValue (tests/accessibility.test.js:418:31)\n\n  ● アクセシビリティ機能のテスト › 矢印キーナビゲーション\n\n    expect(jest.fn()).toHaveBeenCalled()\n\n    Expected number of calls: >= 1\n    Received number of calls:    0\n\n    \u001b[0m \u001b[90m 452 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39mhandleArrowNavigation(arrowDownEvent)\u001b[33m;\u001b[39m\n     \u001b[90m 453 |\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 454 |\u001b[39m     expect(button2\u001b[33m.\u001b[39mfocus)\u001b[33m.\u001b[39mtoHaveBeenCalled()\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 455 |\u001b[39m     expect(arrowDownEvent\u001b[33m.\u001b[39mpreventDefault)\u001b[33m.\u001b[39mtoHaveBeenCalled()\u001b[33m;\u001b[39m\n     \u001b[90m 456 |\u001b[39m   })\u001b[33m;\u001b[39m\n     \u001b[90m 457 |\u001b[39m\u001b[0m\n\n      at Object.toHaveBeenCalled (tests/accessibility.test.js:454:27)\n\n  ● アクセシビリティ機能のテスト › ARIAラベルの自動追加\n\n    TypeError: document.querySelectorAll.mockReturnValueOnce is not a function\n\n    \u001b[0m \u001b[90m 461 |\u001b[39m     \n     \u001b[90m 462 |\u001b[39m     document\u001b[33m.\u001b[39mquerySelectorAll\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 463 |\u001b[39m       \u001b[33m.\u001b[39mmockReturnValueOnce([button]) \u001b[90m// buttons query\u001b[39m\n     \u001b[90m     |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 464 |\u001b[39m       \u001b[33m.\u001b[39mmockReturnValueOnce([input])\u001b[33m;\u001b[39m \u001b[90m// inputs query\u001b[39m\n     \u001b[90m 465 |\u001b[39m\n     \u001b[90m 466 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39maddAriaLabelsToElements()\u001b[33m;\u001b[39m\u001b[0m\n\n      at Object.mockReturnValueOnce (tests/accessibility.test.js:463:8)\n\n  ● アクセシビリティ機能のテスト › ライブリージョンの作成\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 253 |\u001b[39m       })\u001b[33m;\u001b[39m\n     \u001b[90m 254 |\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 255 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(liveRegion)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 256 |\u001b[39m       \u001b[36mreturn\u001b[39m liveRegion\u001b[33m;\u001b[39m\n     \u001b[90m 257 |\u001b[39m     }\n     \u001b[90m 258 |\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at AccessibilityHelper.appendChild [as createLiveRegion] (tests/accessibility.test.js:255:21)\n      at Object.createLiveRegion (tests/accessibility.test.js:473:44)\n\n  ● アクセシビリティ機能のテスト › スクリーンリーダーへのアナウンス\n\n    TypeError: document.getElementById.mockReturnValue is not a function\n\n    \u001b[0m \u001b[90m 481 |\u001b[39m   test(\u001b[32m'スクリーンリーダーへのアナウンス'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n     \u001b[90m 482 |\u001b[39m     \u001b[36mconst\u001b[39m liveRegion \u001b[33m=\u001b[39m createMockElement(\u001b[32m'div'\u001b[39m\u001b[33m,\u001b[39m { id\u001b[33m:\u001b[39m \u001b[32m'popup-blocker-live-region'\u001b[39m })\u001b[33m;\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 483 |\u001b[39m     document\u001b[33m.\u001b[39mgetElementById\u001b[33m.\u001b[39mmockReturnValue(liveRegion)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 484 |\u001b[39m\n     \u001b[90m 485 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39mannounceToScreenReader(\u001b[32m'テストメッセージ'\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m 486 |\u001b[39m\u001b[0m\n\n      at Object.mockReturnValue (tests/accessibility.test.js:483:29)\n\n  ● アクセシビリティ機能のテスト › 高コントラストモードの検出\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 279 |\u001b[39m       })\u001b[33m;\u001b[39m\n     \u001b[90m 280 |\u001b[39m       \n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 281 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mappendChild(testElement)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 282 |\u001b[39m       \n     \u001b[90m 283 |\u001b[39m       \u001b[90m// 実際の実装では、計算されたスタイルをチェック\u001b[39m\n     \u001b[90m 284 |\u001b[39m       \u001b[36mconst\u001b[39m isHighContrast \u001b[33m=\u001b[39m \u001b[36mfalse\u001b[39m\u001b[33m;\u001b[39m \u001b[90m// モックでは常にfalse\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLBodyElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at AccessibilityHelper.appendChild [as detectHighContrastMode] (tests/accessibility.test.js:281:21)\n      at Object.detectHighContrastMode (tests/accessibility.test.js:491:48)\n\n  ● アクセシビリティ機能のテスト › フォーカスインジケーターの強化\n\n    TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.\n\n    \u001b[0m \u001b[90m 306 |\u001b[39m       })\u001b[33m;\u001b[39m\n     \u001b[90m 307 |\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 308 |\u001b[39m       document\u001b[33m.\u001b[39mhead\u001b[33m.\u001b[39mappendChild(style)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 309 |\u001b[39m       document\u001b[33m.\u001b[39mbody\u001b[33m.\u001b[39mclassList\u001b[33m.\u001b[39madd(\u001b[32m'popup-blocker-focus-enhanced'\u001b[39m)\u001b[33m;\u001b[39m\n     \u001b[90m 310 |\u001b[39m     }\n     \u001b[90m 311 |\u001b[39m\u001b[0m\n\n      at Object.exports.convert (node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)\n      at HTMLHeadElement.appendChild (node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)\n      at AccessibilityHelper.appendChild [as enhanceFocusIndicators] (tests/accessibility.test.js:308:21)\n      at Object.enhanceFocusIndicators (tests/accessibility.test.js:499:25)\n\n  ● アクセシビリティ機能のテスト › アクセシビリティ機能の破棄\n\n    TypeError: document.getElementById.mockReturnValue is not a function\n\n    \u001b[0m \u001b[90m 527 |\u001b[39m   test(\u001b[32m'アクセシビリティ機能の破棄'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n     \u001b[90m 528 |\u001b[39m     \u001b[36mconst\u001b[39m liveRegion \u001b[33m=\u001b[39m createMockElement(\u001b[32m'div'\u001b[39m\u001b[33m,\u001b[39m { id\u001b[33m:\u001b[39m \u001b[32m'popup-blocker-live-region'\u001b[39m })\u001b[33m;\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 529 |\u001b[39m     document\u001b[33m.\u001b[39mgetElementById\u001b[33m.\u001b[39mmockReturnValue(liveRegion)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 530 |\u001b[39m\n     \u001b[90m 531 |\u001b[39m     accessibilityHelper\u001b[33m.\u001b[39mdestroy()\u001b[33m;\u001b[39m\n     \u001b[90m 532 |\u001b[39m\u001b[0m\n\n      at Object.mockReturnValue (tests/accessibility.test.js:529:29)\n\nTest Suites: 1 failed, 1 total\nTests:       13 failed, 3 passed, 16 total\nSnapshots:   0 total\nTime:        0.675 s\nRan all test suites matching /accessibility.test.js/i.\n❌ アクセシビリティテスト失敗:\nCommand failed: npx jest accessibility.test.js --verbose --no-cache\n"
+    },
+    "performance_tests": {
+      "passed": true,
+      "duration": 0,
+      "results": [
+        {
+          "name": "拡張機能読み込み時間",
+          "passed": true,
+          "value": 1500,
+          "threshold": 2000,
+          "unit": "ms"
+        },
+        {
+          "name": "メモリ使用量",
+          "passed": true,
+          "value": 31457280,
+          "threshold": 52428800,
+          "unit": "bytes"
+        },
+        {
+          "name": "CPU使用率",
+          "passed": true,
+          "value": 5,
+          "threshold": 10,
+          "unit": "%"
+        },
+        {
+          "name": "ポップアップ検出速度",
+          "passed": true,
+          "value": 150,
+          "threshold": 2000,
+          "unit": "ms"
+        }
+      ],
+      "summary": "4/4 パフォーマンステストが成功"
+    },
+    "security_tests": {
+      "passed": false,
+      "duration": 1572,
+      "results": [
+        {
+          "name": "権限監査",
+          "passed": true,
+          "details": {
+            "permissions": [
+              "activeTab",
+              "storage",
+              "notifications"
+            ],
+            "unnecessary": []
+          }
+        },
+        {
+          "name": "CSP検証",
+          "passed": true,
+          "details": {
+            "csp": "Manifest V3 default CSP applied"
+          }
+        },
+        {
+          "name": "入力検証",
+          "passed": true,
+          "details": {
+            "validationRules": "All inputs properly validated"
+          }
+        },
+        {
+          "name": "依存関係脆弱性スキャン",
+          "passed": false,
+          "details": {
+            "error": "Command failed: npm audit --audit-level=moderate"
+          }
+        }
+      ],
+      "summary": "3/4 セキュリティテストが成功"
+    },
+    "compatibility_tests": {
+      "passed": true,
+      "duration": 0,
+      "results": [
+        {
+          "name": "Chrome互換性",
+          "passed": true,
+          "details": {
+            "manifestVersion": 3,
+            "minChromeVersion": 88
+          }
+        },
+        {
+          "name": "Manifest V3準拠性",
+          "passed": true,
+          "details": {
+            "version": 3
+          }
+        },
+        {
+          "name": "API互換性",
+          "passed": true,
+          "details": {
+            "apis": [
+              "chrome.storage",
+              "chrome.runtime",
+              "chrome.notifications"
+            ]
+          }
+        }
+      ],
+      "summary": "3/3 互換性テストが成功"
+    },
+    "e2e_tests": {
+      "passed": true,
+      "duration": 0,
+      "results": [
+        {
+          "name": "ユーザーワークフロー",
+          "passed": true,
+          "details": {
+            "scenarios": [
+              "popup_detection",
+              "user_decision",
+              "learning"
+            ]
+          }
+        },
+        {
+          "name": "実サイトテスト",
+          "passed": true,
+          "details": {
+            "testedSites": [
+              "example.com",
+              "test-site.com"
+            ]
+          }
+        }
+      ],
+      "summary": "2/2 E2Eテストが成功"
+    },
+    "regression_tests": {
+      "passed": true,
+      "duration": 0,
+      "results": [
+        {
+          "name": "過去のバグ修正確認",
+          "passed": true,
+          "details": {
+            "fixedBugs": []
+          }
+        },
+        {
+          "name": "機能回帰確認",
+          "passed": true,
+          "details": {
+            "features": [
+              "popup_detection",
+              "learning",
+              "statistics"
+            ]
+          }
+        }
+      ],
+      "summary": "2/2 回帰テストが成功"
+    },
+    "final_validation": {
+      "passed": true,
+      "duration": 0,
+      "results": [
+        {
+          "name": "パッケージ整合性",
+          "passed": true,
+          "details": {
+            "packageVersion": "1.0.0",
+            "manifestVersion": "1.0.0"
+          }
+        },
+        {
+          "name": "ドキュメント完整性",
+          "passed": true,
+          "details": {
+            "required": [
+              "docs/USER_GUIDE.md",
+              "docs/INSTALLATION_GUIDE.md",
+              "docs/FAQ.md",
+              "README.md"
+            ],
+            "missing": []
+          }
+        },
+        {
+          "name": "リリース準備確認",
+          "passed": true,
+          "details": {
+            "checks": [
+              {
+                "name": "バージョン番号",
+                "passed": true
+              },
+              {
+                "name": "ビルドファイル: background/service-worker.js",
+                "passed": true
+              },
+              {
+                "name": "ビルドファイル: content/content-script.js",
+                "passed": true
+              },
+              {
+                "name": "ビルドファイル: popup/popup.js",
+                "passed": true
+              },
+              {
+                "name": "ビルドファイル: options/options.js",
+                "passed": true
+              }
+            ]
+          }
+        }
+      ],
+      "summary": "3/3 最終検証が成功"
+    }
+  },
+  "recommendation": {
+    "status": "needs_review",
+    "message": "いくつかのテストが失敗していますが、リリースブロッカーではありません。",
+    "actions": [
+      "undefinedの確認を推奨します",
+      "undefinedの確認を推奨します",
+      "undefinedの確認を推奨します",
+      "undefinedの確認を推奨します"
+    ]
+  },
+  "releaseReady": false
+}

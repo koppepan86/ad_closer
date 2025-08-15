@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>広告検出テスト用サンプルDOM</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <h1>広告検出テスト用ページ</h1>
+        <p>このページには様々なタイプの広告要素が含まれています。</p>
+    </div>
+
+    <!-- 1. 固定位置バナー広告（元のサンプル） -->
+    <div id="bottom-banner-ad"
+        style="position:fixed; bottom:0;left:0;right:0;width:100%;background: rgba(0, 0, 0, 0.7); z-index:99998;text-align:center;transform:translate3d(0, 0, 0);">
+        <div style="margin:auto;z-index:99999;">
+            <div style="width:728px;height:90px;margin: auto;">
+                <iframe id="bnc_ad_17441e78ed837-e139-4fed-8cb8-b29488a9201f_iframe" width="728" height="90"
+                    scrolling="no" frameborder="0" marginwidth="0" marginheight="0"
+                    style="overflow: hidden; border: 0; margin: 0 auto; width: 728; height: 90;"
+                    data-gtm-yt-inspected-8="true"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. サイドバー広告 -->
+    <div id="sidebar-ad"
+        style="position: fixed; top: 50%; right: 10px; width: 160px; height: 600px; background: #f0f0f0; border: 1px solid #ccc; z-index: 1000; transform: translateY(-50%);">
+        <iframe src="about:blank" width="160" height="600" frameborder="0"></iframe>
+    </div>
+
+    <!-- 3. ポップアップ風モーダル広告 -->
+    <div id="popup-ad-overlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: none;">
+        <div
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 250px; background: white; border-radius: 8px; padding: 20px;">
+            <div style="text-align: right;">
+                <button onclick="document.getElementById('popup-ad-overlay').style.display='none'"
+                    style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+            </div>
+            <iframe src="about:blank" width="300" height="200" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <!-- 4. Google AdSense風 -->
+    <div class="adsbygoogle"
+        style="position: absolute; top: 100px; right: 20px; width: 300px; height: 250px; background: #f9f9f9; border: 1px solid #ddd;"
+        data-ad-client="ca-pub-1234567890123456" data-ad-slot="1234567890">
+        <iframe src="about:blank" width="300" height="250" frameborder="0"></iframe>
+    </div>
+
+    <!-- 5. 上部固定バナー -->
+    <div id="top-banner"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 50px; background: #ff6b6b; z-index: 5000; text-align: center; line-height: 50px; color: white;">
+        広告バナー - クリックして閉じる
+    </div>
+
+    <!-- 6. フローティング広告 -->
+    <div class="floating-ad"
+        style="position: fixed; bottom: 20px; right: 20px; width: 320px; height: 100px; background: #4ecdc4; z-index: 2000; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+        <iframe id="floating-ad-frame" src="about:blank" width="320" height="100" frameborder="0"></iframe>
+    </div>
+
+    <!-- テスト用ボタン -->
+    <div
+        style="position: fixed; top: 60px; left: 20px; z-index: 20000; background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <h3>テスト用コントロール</h3>
+        <button onclick="showPopupAd()">ポップアップ広告を表示</button><br><br>
+        <button onclick="hideTopBanner()">上部バナーを非表示</button><br><br>
+        <button onclick="testDetection()">検出テスト実行</button><br><br>
+        <button onclick="createMockPopupDetector(); setTimeout(testDetection, 100);">モック作成＆テスト</button><br><br>
+        <button onclick="showSystemStatus()">システム状態確認</button><br><br>
+        <button onclick="testNotifications()">通知テスト</button><br><br>
+        <div id="detection-results" style="margin-top: 10px; font-size: 12px; max-height: 300px; overflow-y: auto;">
+        </div>
+    </div>
+
+    <script>
+        function showPopupAd() {
+            document.getElementById('popup-ad-overlay').style.display = 'block';
+        }
+
+        function hideTopBanner() {
+            const banner = document.getElementById('top-banner');
+            if (banner) {
+                banner.style.display = 'none';
+            }
+        }
+
+        // PopupDetectorクラスのモックを作成（拡張機能が読み込まれていない場合用）
+        function createMockPopupDetector() {
+            if (typeof PopupDetector === 'undefined') {
+                window.PopupDetector = class MockPopupDetector {
+                    constructor(options = {}) {
+                        this.options = options;
+                        this.initialized = true;
+                        this.universalDetector = {
+                            selectors: [
+                                '[class*="popup"]', '[class*="modal"]', '[class*="overlay"]', '[class*="dialog"]',
+                                '[id*="popup"]', '[id*="modal"]', '[role="dialog"]', '.popup', '.modal', '.overlay'
+                            ],
+                            adSelectors: [
+                                '[id*="ad"]', '[id*="banner"]', '[id*="bnc_ad"]', '[class*="ad"]', '[class*="banner"]',
+                                '[class*="advertisement"]', 'iframe[id*="ad"]', 'iframe[src*="ads"]', 'iframe[src*="doubleclick"]',
+                                'iframe[src*="googlesyndication"]', '[data-ad-slot]', '[data-google-ad-client]'
+                            ],
+                            highZIndexThreshold: 1000,
+                            adZIndexThreshold: 500,
+                            commonAdSizes: [
+                                { width: 728, height: 90 }, { width: 300, height: 250 }, { width: 320, height: 50 },
+                                { width: 160, height: 600 }, { width: 300, height: 600 }, { width: 970, height: 250 }, { width: 320, height: 100 }
+                            ]
+                        };
+                    }
+
+                    detectPopups() {
+                        const detectedPopups = [];
+                        const allSelectors = [...this.universalDetector.selectors, ...this.universalDetector.adSelectors];
+
+                        for (const selector of allSelectors) {
+                            try {
+                                const elements = document.querySelectorAll(selector);
+                                for (const element of elements) {
+                                    if (this.isVisiblePopup(element)) {
+                                        detectedPopups.push({
+                                            element,
+                                            type: this.universalDetector.adSelectors.includes(selector) ? 'ad-selector' : 'selector',
+                                            selector,
+                                            timestamp: Date.now()
+                                        });
+                                    }
+                                }
+                            } catch (error) {
+                                console.debug('Selector error:', selector, error);
+                            }
+                        }
+
+                        // z-indexベースの検出
+                        const allElements = document.querySelectorAll('*');
+                        for (const element of allElements) {
+                            const style = window.getComputedStyle(element);
+                            const zIndex = parseInt(style.zIndex) || 0;
+
+                            if (zIndex > this.universalDetector.adZIndexThreshold &&
+                                (style.position === 'fixed' || style.position === 'absolute') &&
+                                this.isVisiblePopup(element)) {
+                                detectedPopups.push({
+                                    element,
+                                    type: 'zindex',
+                                    zIndex: style.zIndex,
+                                    timestamp: Date.now()
+                                });
+                            }
+                        }
+
+                        return this.deduplicatePopups(detectedPopups);
+                    }
+
+                    isVisiblePopup(element) {
+                        try {
+                            const rect = element.getBoundingClientRect();
+                            const style = window.getComputedStyle(element);
+
+                            if (rect.width === 0 || rect.height === 0 || style.display === 'none' || style.visibility === 'hidden') {
+                                return false;
+                            }
+
+                            return this.isLikelyPopup(element);
+                        } catch (error) {
+                            return false;
+                        }
+                    }
+
+                    isLikelyPopup(element) {
+                        const className = element.className || '';
+                        const id = element.id || '';
+
+                        const patterns = [/popup/i, /modal/i, /overlay/i, /dialog/i, /ad[_-]?/i, /banner/i, /advertisement/i, /bnc_ad/i];
+
+                        for (const pattern of patterns) {
+                            if (pattern.test(className) || pattern.test(id)) {
+                                return true;
+                            }
+                        }
+
+                        const style = window.getComputedStyle(element);
+                        if ((style.position === 'fixed' || style.position === 'absolute')) {
+                            const zIndex = parseInt(style.zIndex) || 0;
+                            if (zIndex > this.universalDetector.adZIndexThreshold) {
+                                return this.hasAdCharacteristics(element);
+                            }
+                        }
+
+                        return false;
+                    }
+
+                    hasAdCharacteristics(element) {
+                        const rect = element.getBoundingClientRect();
+
+                        // 一般的な広告サイズかチェック
+                        for (const adSize of this.universalDetector.commonAdSizes) {
+                            if (Math.abs(rect.width - adSize.width) <= 10 && Math.abs(rect.height - adSize.height) <= 10) {
+                                return true;
+                            }
+                        }
+
+                        // 画面の端に配置されているかチェック
+                        const isAtEdge = rect.top <= 10 || rect.bottom >= window.innerHeight - 10 ||
+                            rect.left <= 10 || rect.right >= window.innerWidth - 10;
+                        const isFullWidth = rect.width >= window.innerWidth * 0.8;
+
+                        if (isAtEdge || isFullWidth) {
+                            return true;
+                        }
+
+                        // iframeを含む場合
+                        const iframe = element.querySelector('iframe');
+                        if (iframe) {
+                            const iframeSrc = iframe.src || '';
+                            const iframeId = iframe.id || '';
+                            const adPatterns = [/ads/i, /doubleclick/i, /googlesyndication/i, /adsystem/i, /ad.*server/i];
+
+                            for (const pattern of adPatterns) {
+                                if (pattern.test(iframeSrc) || pattern.test(iframeId)) {
+                                    return true;
+                                }
+                            }
+                        }
+
+                        return false;
+                    }
+
+                    deduplicatePopups(popups) {
+                        const seen = new Set();
+                        const unique = [];
+
+                        for (const popup of popups) {
+                            const key = popup.element.tagName + '#' + (popup.element.id || '') + '.' + (popup.element.className || '');
+                            if (!seen.has(key)) {
+                                seen.add(key);
+                                unique.push(popup);
+                            }
+                        }
+
+                        return unique;
+                    }
+                };
+            }
+
+            if (!window.popupDetector) {
+                window.popupDetector = new PopupDetector();
+                console.log('Mock PopupDetector instance created');
+            }
+        }
+
+        function testDetection() {
+            const resultsDiv = document.getElementById('detection-results');
+            resultsDiv.innerHTML = '<strong>検出テスト実行中...</strong><br>';
+
+            // PopupDetectorが利用可能かチェック
+            if (!window.popupDetector || typeof window.popupDetector.detectPopups !== 'function') {
+                resultsDiv.innerHTML += '<span style="color: orange;">PopupDetectorが利用できません - モックを作成中...</span><br>';
+                createMockPopupDetector();
+                setTimeout(testDetection, 500);
+                return;
+            }
+
+            try {
+                const detectedPopups = window.popupDetector.detectPopups();
+                resultsDiv.innerHTML += `検出された要素数: ${detectedPopups.length}<br>`;
+
+                detectedPopups.forEach((popup, index) => {
+                    const elementInfo = `${popup.element.tagName}#${popup.element.id || 'no-id'}.${popup.element.className || 'no-class'}`;
+                    resultsDiv.innerHTML += `${index + 1}. ${elementInfo} (${popup.type})<br>`;
+                });
+
+                if (detectedPopups.length === 0) {
+                    resultsDiv.innerHTML += '<span style="color: red;">広告要素が検出されませんでした</span><br>';
+                } else {
+                    resultsDiv.innerHTML += '<span style="color: green;">検出成功！</span><br>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML += `<span style="color: red;">エラー: ${error.message}</span><br>`;
+            }
+
+            // 手動で広告要素をチェック
+            const adElements = [
+                document.getElementById('bottom-banner-ad'),
+                document.getElementById('sidebar-ad'),
+                document.getElementById('popup-ad-overlay'),
+                document.querySelector('.adsbygoogle'),
+                document.getElementById('top-banner'),
+                document.querySelector('.floating-ad')
+            ].filter(el => el !== null);
+
+            resultsDiv.innerHTML += `<br><strong>手動チェック:</strong><br>`;
+            resultsDiv.innerHTML += `ページ内の広告要素数: ${adElements.length}<br>`;
+
+            adElements.forEach((el, index) => {
+                const style = window.getComputedStyle(el);
+                const rect = el.getBoundingClientRect();
+                const isVisible = rect.width > 0 && rect.height > 0 && style.display !== 'none';
+                resultsDiv.innerHTML += `${index + 1}. ${el.tagName}#${el.id || 'no-id'} - ${isVisible ? '表示中' : '非表示'} (z-index: ${style.zIndex})<br>`;
+            });
+
+            // 検出精度の評価
+            if (window.popupDetector) {
+                const detectedCount = window.popupDetector.detectPopups().length;
+                const visibleAdElements = adElements.filter(el => {
+                    const style = window.getComputedStyle(el);
+                    const rect = el.getBoundingClientRect();
+                    return rect.width > 0 && rect.height > 0 && style.display !== 'none';
+                });
+                const expectedCount = visibleAdElements.length;
+
+                const accuracy = expectedCount > 0 ? Math.round((Math.min(detectedCount, expectedCount) / expectedCount) * 100) : 0;
+                resultsDiv.innerHTML += `<br><strong>検出精度: ${accuracy}% (${detectedCount}/${expectedCount})</strong><br>`;
+
+                if (accuracy >= 80) {
+                    resultsDiv.innerHTML += '<span style="color: green;">✓ 良好な検出精度です</span><br>';
+                } else if (accuracy >= 50) {
+                    resultsDiv.innerHTML += '<span style="color: orange;">△ 検出精度を改善できます</span><br>';
+                } else {
+                    resultsDiv.innerHTML += '<span style="color: red;">✗ 検出精度が低いです</span><br>';
+                }
+            }
+        }
+
+        function showSystemStatus() {
+            const resultsDiv = document.getElementById('detection-results');
+            resultsDiv.innerHTML = '<strong>システム状態確認中...</strong><br>';
+
+            const status = {
+                timestamp: new Date().toISOString(),
+                popupDetector: {
+                    exists: !!window.popupDetector,
+                    type: window.popupDetector ? (window.popupDetector.constructor.name || 'Unknown') : 'N/A',
+                    initialized: window.popupDetector ? window.popupDetector.initialized : false,
+                    hasDetectMethod: window.popupDetector ? typeof window.popupDetector.detectPopups === 'function' : false
+                },
+                popupDetectorClass: {
+                    exists: typeof PopupDetector !== 'undefined',
+                    type: typeof PopupDetector
+                },
+                chrome: {
+                    exists: typeof chrome !== 'undefined',
+                    runtime: !!(typeof chrome !== 'undefined' && chrome.runtime),
+                    extension: !!(typeof chrome !== 'undefined' && chrome.extension)
+                },
+                page: {
+                    url: window.location.href,
+                    title: document.title,
+                    readyState: document.readyState,
+                    elementsCount: document.querySelectorAll('*').length
+                }
+            };
+
+            resultsDiv.innerHTML = '<strong>システム状態:</strong><br>';
+            resultsDiv.innerHTML += '<pre style="font-size: 10px; background: #f0f0f0; padding: 5px; border-radius: 3px;">';
+            resultsDiv.innerHTML += JSON.stringify(status, null, 2);
+            resultsDiv.innerHTML += '</pre>';
+
+            // 推奨アクション
+            resultsDiv.innerHTML += '<br><strong>推奨アクション:</strong><br>';
+
+            if (!status.popupDetector.exists) {
+                resultsDiv.innerHTML += '• PopupDetectorが見つかりません → 「モック作成＆テスト」ボタンをクリック<br>';
+            } else if (!status.popupDetector.hasDetectMethod) {
+                resultsDiv.innerHTML += '• PopupDetectorにdetectPopupsメソッドがありません → モックを再作成<br>';
+            } else {
+                resultsDiv.innerHTML += '• PopupDetectorは正常に動作可能です → 「検出テスト実行」ボタンをクリック<br>';
+            }
+
+            if (!status.chrome.exists) {
+                resultsDiv.innerHTML += '• Chrome拡張機能APIが利用できません → 通常のWebページとして動作中<br>';
+            } else if (!status.chrome.runtime) {
+                resultsDiv.innerHTML += '• Chrome Runtime APIが利用できません<br>';
+            }
+        }
+
+        function testNotifications() {
+            const resultsDiv = document.getElementById('detection-results');
+            resultsDiv.innerHTML = '<strong>通知テスト実行中...</strong><br>';
+
+            // 検出イベントを手動で発火してテスト
+            const mockPopups = [
+                {
+                    element: document.getElementById('bottom-banner-ad'),
+                    type: 'ad-selector',
+                    selector: '[id*="ad"]',
+                    timestamp: Date.now()
+                },
+                {
+                    element: document.getElementById('sidebar-ad'),
+                    type: 'zindex',
+                    zIndex: '1000',
+                    timestamp: Date.now()
+                }
+            ].filter(p => p.element !== null);
+
+            if (mockPopups.length > 0) {
+                // カスタムイベントを発火
+                const event = new CustomEvent('popupsDetected', {
+                    detail: {
+                        popups: mockPopups,
+                        timestamp: Date.now(),
+                        detector: { options: { debugMode: true } }
+                    }
+                });
+
+                document.dispatchEvent(event);
+                
+                resultsDiv.innerHTML += `通知イベントを発火しました (${mockPopups.length}個の要素)<br>`;
+                resultsDiv.innerHTML += '通知が表示されるかご確認ください<br>';
+                
+                // AdDetectionNotifierの統計を表示
+                if (window.adDetectionNotifier) {
+                    const stats = window.adDetectionNotifier.getStats();
+                    resultsDiv.innerHTML += `<br><strong>AdDetectionNotifier統計:</strong><br>`;
+                    resultsDiv.innerHTML += `通知回数: ${stats.notificationCount}<br>`;
+                    resultsDiv.innerHTML += `最後の通知: ${stats.lastNotificationTime ? new Date(stats.lastNotificationTime).toLocaleTimeString() : 'なし'}<br>`;
+                } else {
+                    resultsDiv.innerHTML += '<span style="color: orange;">AdDetectionNotifierが利用できません</span><br>';
+                }
+            } else {
+                resultsDiv.innerHTML += '<span style="color: red;">テスト用の広告要素が見つかりません</span><br>';
+            }
+
+            // フォールバック通知もテスト
+            setTimeout(() => {
+                resultsDiv.innerHTML += '<br><strong>フォールバック通知テスト:</strong><br>';
+                
+                // DOM通知を直接作成
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #2196F3;
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 4px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                    z-index: 999999;
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    max-width: 300px;
+                    opacity: 0;
+                    transform: translateX(100%);
+                    transition: all 0.3s ease;
+                `;
+                notification.textContent = 'テスト通知: 広告検出システムが動作中です';
+
+                document.body.appendChild(notification);
+
+                // アニメーション表示
+                setTimeout(() => {
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateX(0)';
+                }, 100);
+
+                // 自動削除
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+
+                resultsDiv.innerHTML += 'フォールバック通知を表示しました<br>';
+            }, 1000);
+        }
+
+        // ページ読み込み後に初期化とテスト実行
+        window.addEventListener('load', function () {
+            // 拡張機能のPopupDetectorが利用できない場合はモックを作成
+            if (!window.popupDetector) {
+                console.log('Extension PopupDetector not found, creating mock...');
+                createMockPopupDetector();
+            }
+
+            // 少し待ってからテスト実行
+            setTimeout(testDetection, 1000);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disconnect Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: #0056b3;
+        }
+        
+        .status-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Disconnect Fix Test</h1>
+        <p>「observer.disconnect is not a function」エラーの修正をテストします。</p>
+        
+        <div class="status-display">
+            <h3>Observer Status:</h3>
+            <div id="status-display"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="button" onclick="testObserverValidation()">Observer検証テスト</button>
+            <button class="button" onclick="testSafeDisconnect()">安全な切断テスト</button>
+            <button class="button" onclick="testDetectionThrottler()">DetectionThrottler テスト</button>
+            <button class="button" onclick="simulateInvalidObserver()">無効なObserverシミュレーション</button>
+            <button class="button" onclick="testGuardMethods()">Guard メソッドテスト</button>
+            <button class="button" onclick="runAllTests()">全テスト実行</button>
+            <button class="button" onclick="clearResults()">結果クリア</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function addTestResult(testName, success, message, details = null) {
+            const result = {
+                testName,
+                success,
+                message,
+                details,
+                timestamp: new Date().toISOString()
+            };
+            
+            testResults.push(result);
+            displayTestResult(result);
+        }
+
+        function displayTestResult(result) {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${result.success ? 'success' : 'error'}`;
+            
+            let content = `[${result.timestamp}] ${result.testName}: ${result.message}`;
+            if (result.details) {
+                content += '\\n詳細: ' + JSON.stringify(result.details, null, 2);
+            }
+            
+            resultDiv.textContent = content;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function updateStatusDisplay() {
+            const statusDiv = document.getElementById('status-display');
+            
+            const status = {
+                timestamp: new Date().toISOString(),
+                popupDetector: !!window.popupDetector,
+                popupDetectorGuard: !!window.PopupDetectorGuard,
+                detectionThrottler: !!window.DetectionThrottler
+            };
+            
+            if (window.popupDetector) {
+                status.popupDetectorObserver = {
+                    exists: !!window.popupDetector.observer,
+                    type: typeof window.popupDetector.observer,
+                    hasDisconnect: window.popupDetector.observer ? typeof window.popupDetector.observer.disconnect === 'function' : false,
+                    isMutationObserver: window.popupDetector.observer instanceof MutationObserver
+                };
+            }
+            
+            if (window.PopupDetectorGuard) {
+                status.guardMethods = {
+                    safeDisconnectObserver: typeof window.PopupDetectorGuard.safeDisconnectObserver === 'function',
+                    safeSetupMutationObserver: typeof window.PopupDetectorGuard.safeSetupMutationObserver === 'function'
+                };
+            }
+            
+            if (window.DetectionThrottler) {
+                status.throttlerMethods = {
+                    safeDisconnectObserver: typeof window.DetectionThrottler.safeDisconnectObserver === 'function',
+                    stopAllDetection: typeof window.DetectionThrottler.stopAllDetection === 'function',
+                    resumeDetection: typeof window.DetectionThrottler.resumeDetection === 'function'
+                };
+            }
+            
+            statusDiv.textContent = JSON.stringify(status, null, 2);
+        }
+
+        function testObserverValidation() {
+            try {
+                const results = {
+                    popupDetectorExists: !!window.popupDetector,
+                    observerExists: !!(window.popupDetector && window.popupDetector.observer),
+                    observerType: window.popupDetector && window.popupDetector.observer ? typeof window.popupDetector.observer : 'N/A',
+                    hasDisconnectMethod: false,
+                    isMutationObserver: false
+                };
+                
+                if (window.popupDetector && window.popupDetector.observer) {
+                    results.hasDisconnectMethod = typeof window.popupDetector.observer.disconnect === 'function';
+                    results.isMutationObserver = window.popupDetector.observer instanceof MutationObserver;
+                }
+                
+                const success = !results.observerExists || (results.observerExists && results.hasDisconnectMethod);
+                
+                addTestResult(
+                    'Observer検証テスト',
+                    success,
+                    success ? 'Observerの検証が成功しました' : 'Observerに問題があります',
+                    results
+                );
+                
+            } catch (error) {
+                addTestResult('Observer検証テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testSafeDisconnect() {
+            try {
+                if (!window.PopupDetectorGuard || typeof window.PopupDetectorGuard.safeDisconnectObserver !== 'function') {
+                    addTestResult('安全な切断テスト', false, 'safeDisconnectObserverメソッドが利用できません');
+                    return;
+                }
+                
+                const testCases = [
+                    { name: 'null observer', observer: null, expectedResult: false },
+                    { name: 'undefined observer', observer: undefined, expectedResult: false },
+                    { name: 'invalid observer', observer: { notDisconnect: true }, expectedResult: false },
+                    { name: 'valid observer', observer: { disconnect: () => {} }, expectedResult: true }
+                ];
+                
+                const results = testCases.map(testCase => {
+                    try {
+                        const result = window.PopupDetectorGuard.safeDisconnectObserver(testCase.observer, testCase.name);
+                        return {
+                            name: testCase.name,
+                            expected: testCase.expectedResult,
+                            actual: result,
+                            success: result === testCase.expectedResult
+                        };
+                    } catch (error) {
+                        return {
+                            name: testCase.name,
+                            expected: testCase.expectedResult,
+                            actual: 'error',
+                            success: false,
+                            error: error.message
+                        };
+                    }
+                });
+                
+                const successCount = results.filter(r => r.success).length;
+                const totalCount = results.length;
+                
+                addTestResult(
+                    '安全な切断テスト',
+                    successCount === totalCount,
+                    `${successCount}/${totalCount} テストケースが成功しました`,
+                    { results }
+                );
+                
+            } catch (error) {
+                addTestResult('安全な切断テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testDetectionThrottler() {
+            try {
+                if (!window.DetectionThrottler) {
+                    addTestResult('DetectionThrottler テスト', false, 'DetectionThrottlerが利用できません');
+                    return;
+                }
+                
+                const throttler = window.DetectionThrottler;
+                const hasRequiredMethods = typeof throttler.stopAllDetection === 'function' &&
+                                         typeof throttler.resumeDetection === 'function';
+                
+                if (!hasRequiredMethods) {
+                    addTestResult('DetectionThrottler テスト', false, '必要なメソッドが不足しています');
+                    return;
+                }
+                
+                // 停止と再開のテスト（エラーが発生しないことを確認）
+                let testPassed = true;
+                let errorDetails = [];
+                
+                try {
+                    throttler.stopAllDetection();
+                    console.log('DetectionThrottler: stopAllDetection called successfully');
+                } catch (stopError) {
+                    testPassed = false;
+                    errorDetails.push({ method: 'stopAllDetection', error: stopError.message });
+                }
+                
+                setTimeout(() => {
+                    try {
+                        throttler.resumeDetection();
+                        console.log('DetectionThrottler: resumeDetection called successfully');
+                        
+                        addTestResult(
+                            'DetectionThrottler テスト',
+                            testPassed && errorDetails.length === 0,
+                            testPassed && errorDetails.length === 0 ? 
+                                'DetectionThrottlerの停止・再開が正常に動作しました' : 
+                                'DetectionThrottlerでエラーが発生しました',
+                            { testPassed, errorDetails }
+                        );
+                    } catch (resumeError) {
+                        errorDetails.push({ method: 'resumeDetection', error: resumeError.message });
+                        addTestResult(
+                            'DetectionThrottler テスト',
+                            false,
+                            'DetectionThrottlerでエラーが発生しました',
+                            { errorDetails }
+                        );
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                addTestResult('DetectionThrottler テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function simulateInvalidObserver() {
+            try {
+                addTestResult('無効なObserverシミュレーション', true, '無効なObserverのシミュレーションを開始します...');
+                
+                // 元のobserverを保存
+                const originalObserver = window.popupDetector ? window.popupDetector.observer : null;
+                
+                if (window.popupDetector) {
+                    // 無効なobserverを設定
+                    window.popupDetector.observer = { 
+                        notDisconnect: true,
+                        fakeProperty: 'invalid observer'
+                    };
+                    
+                    addTestResult('無効なObserverシミュレーション', true, '無効なObserverを設定しました');
+                    
+                    // DetectionThrottlerのメソッドを呼び出してエラーが発生しないことを確認
+                    if (window.DetectionThrottler) {
+                        try {
+                            window.DetectionThrottler.stopAllDetection();
+                            addTestResult('無効なObserverシミュレーション', true, 'stopAllDetectionが無効なObserverでも正常に動作しました');
+                            
+                            setTimeout(() => {
+                                try {
+                                    window.DetectionThrottler.resumeDetection();
+                                    addTestResult('無効なObserverシミュレーション', true, 'resumeDetectionが無効なObserverでも正常に動作しました');
+                                    
+                                    // 元のobserverを復元
+                                    if (window.popupDetector) {
+                                        window.popupDetector.observer = originalObserver;
+                                        addTestResult('無効なObserverシミュレーション', true, '元のObserverを復元しました');
+                                    }
+                                } catch (resumeError) {
+                                    addTestResult('無効なObserverシミュレーション', false, 'resumeDetectionでエラーが発生しました', { error: resumeError.message });
+                                }
+                            }, 1000);
+                            
+                        } catch (stopError) {
+                            addTestResult('無効なObserverシミュレーション', false, 'stopAllDetectionでエラーが発生しました', { error: stopError.message });
+                        }
+                    } else {
+                        addTestResult('無効なObserverシミュレーション', false, 'DetectionThrottlerが利用できません');
+                    }
+                } else {
+                    addTestResult('無効なObserverシミュレーション', false, 'popupDetectorが利用できません');
+                }
+                
+            } catch (error) {
+                addTestResult('無効なObserverシミュレーション', false, 'シミュレーション実行エラー', { error: error.message });
+            }
+        }
+
+        function testGuardMethods() {
+            try {
+                if (!window.PopupDetectorGuard) {
+                    addTestResult('Guard メソッドテスト', false, 'PopupDetectorGuardが利用できません');
+                    return;
+                }
+                
+                const guard = window.PopupDetectorGuard;
+                const requiredMethods = [
+                    'safeDisconnectObserver',
+                    'safeSetupMutationObserver'
+                ];
+                
+                const availableMethods = requiredMethods.filter(method => typeof guard[method] === 'function');
+                const success = availableMethods.length === requiredMethods.length;
+                
+                // メソッドの動作テスト
+                let methodTests = {};
+                
+                if (typeof guard.safeDisconnectObserver === 'function') {
+                    try {
+                        const result = guard.safeDisconnectObserver(null);
+                        methodTests.safeDisconnectObserver = { success: result === false, result };
+                    } catch (error) {
+                        methodTests.safeDisconnectObserver = { success: false, error: error.message };
+                    }
+                }
+                
+                if (typeof guard.safeSetupMutationObserver === 'function') {
+                    try {
+                        guard.safeSetupMutationObserver();
+                        methodTests.safeSetupMutationObserver = { success: true };
+                    } catch (error) {
+                        methodTests.safeSetupMutationObserver = { success: false, error: error.message };
+                    }
+                }
+                
+                addTestResult(
+                    'Guard メソッドテスト',
+                    success,
+                    success ? 'PopupDetectorGuardの必要なメソッドが利用可能です' : '一部のメソッドが不足しています',
+                    { 
+                        requiredMethods,
+                        availableMethods,
+                        missingMethods: requiredMethods.filter(method => !availableMethods.includes(method)),
+                        methodTests
+                    }
+                );
+                
+            } catch (error) {
+                addTestResult('Guard メソッドテスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('全テスト開始', true, 'Disconnect修正の全テストを実行します...');
+            
+            setTimeout(() => testObserverValidation(), 100);
+            setTimeout(() => testSafeDisconnect(), 1000);
+            setTimeout(() => testDetectionThrottler(), 2000);
+            setTimeout(() => simulateInvalidObserver(), 4000);
+            setTimeout(() => testGuardMethods(), 6000);
+            
+            setTimeout(() => {
+                const successCount = testResults.filter(r => r.success).length - 1; // -1 for start message
+                const totalCount = testResults.length - 1;
+                addTestResult(
+                    '全テスト完了',
+                    successCount === totalCount,
+                    `${successCount}/${totalCount} テストが成功しました`,
+                    { successRate: `${Math.round((successCount/totalCount) * 100)}%` }
+                );
+            }, 8000);
+        }
+
+        function clearResults() {
+            testResults = [];
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatusDisplay();
+            setInterval(updateStatusDisplay, 3000); // 3秒ごとにステータス更新
+        });
+    </script>
+</body>
+</html>

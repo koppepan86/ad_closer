@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreviewGallery テスト</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .test-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .test-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .test-btn:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        .test-btn.danger {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+        
+        .test-btn.danger:hover {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .test-output {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .gallery-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            background: #fafafa;
+        }
+        
+        .mock-ad {
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 10px;
+            position: relative;
+        }
+        
+        .mock-ad.banner {
+            width: 728px;
+            height: 90px;
+            background: linear-gradient(45deg, #45b7d1, #96ceb4);
+        }
+        
+        .mock-ad.popup {
+            width: 400px;
+            height: 300px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>PreviewGallery テスト</h1>
+        
+        <div class="test-section">
+            <div class="test-title">モック広告要素</div>
+            <div id="mock-ads">
+                <div class="mock-ad" data-ad-type="overlay">オーバーレイ広告 (300x200)</div>
+                <div class="mock-ad banner" data-ad-type="banner">バナー広告 (728x90)</div>
+                <div class="mock-ad popup" data-ad-type="popup">ポップアップ広告 (400x300)</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">テストコントロール</div>
+            <div class="test-controls">
+                <button class="test-btn" onclick="testBasicGallery()">基本ギャラリー表示</button>
+                <button class="test-btn" onclick="testWithRealScreenshots()">実際のスクリーンショット</button>
+                <button class="test-btn" onclick="testFallbackDisplay()">フォールバック表示</button>
+                <button class="test-btn" onclick="testIndividualSelection()">個別選択機能</button>
+                <button class="test-btn" onclick="testExpandedView()">拡大表示</button>
+                <button class="test-btn" onclick="testBulkOperations()">一括操作</button>
+                <button class="test-btn danger" onclick="clearGallery()">ギャラリークリア</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">プレビューギャラリー</div>
+            <div id="gallery-container" class="gallery-container">
+                <p style="text-align: center; color: #666; margin: 50px 0;">
+                    テストボタンをクリックしてプレビューギャラリーを表示してください
+                </p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">ログ出力</div>
+            <div id="log-output" class="test-output">テスト開始を待機中...</div>
+        </div>
+    </div>
+
+    <!-- 必要なライブラリを読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="content/preview-gallery.js"></script>
+
+    <script>
+        let previewGallery = null;
+        let testData = [];
+
+        // ログ出力関数
+        function log(message, type = 'info') {
+            const output = document.getElementById('log-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            output.textContent += logEntry;
+            output.scrollTop = output.scrollHeight;
+            
+            if (type === 'error') {
+                console.error(message);
+            } else {
+                console.log(message);
+            }
+        }
+
+        // ギャラリーをクリア
+        function clearGallery() {
+            if (previewGallery) {
+                previewGallery.cleanup();
+                previewGallery = null;
+            }
+            
+            const container = document.getElementById('gallery-container');
+            container.innerHTML = '<p style="text-align: center; color: #666; margin: 50px 0;">ギャラリーがクリアされました</p>';
+            
+            log('ギャラリーをクリアしました');
+        }
+
+        // モックプレビューデータを生成
+        function generateMockPreviewData() {
+            const mockAds = document.querySelectorAll('.mock-ad');
+            const previewData = [];
+            
+            mockAds.forEach((ad, index) => {
+                const rect = ad.getBoundingClientRect();
+                const adType = ad.getAttribute('data-ad-type');
+                
+                previewData.push({
+                    id: `preview_${index}`,
+                    element: ad,
+                    screenshot: null, // 基本テストではnull
+                    elementInfo: {
+                        tagName: ad.tagName,
+                        className: ad.className,
+                        id: ad.id || '',
+                        position: { x: rect.left, y: rect.top },
+                        size: { width: rect.width, height: rect.height },
+                        zIndex: window.getComputedStyle(ad).zIndex || 'auto',
+                        type: adType === 'overlay' ? 'オーバーレイ広告' : 
+                              adType === 'banner' ? 'バナー広告' : 
+                              adType === 'popup' ? 'ポップアップ広告' : '広告要素'
+                    },
+                    fallback: null,
+                    captureTime: Math.random() * 200 + 100,
+                    timestamp: Date.now()
+                });
+            });
+            
+            return previewData;
+        }
+
+        // 基本ギャラリー表示テスト
+        function testBasicGallery() {
+            try {
+                log('基本ギャラリー表示テストを開始...');
+                
+                clearGallery();
+                
+                // PreviewGalleryインスタンスを作成
+                previewGallery = new PreviewGallery({
+                    debugMode: true,
+                    showElementInfo: true,
+                    enableIndividualSelection: true,
+                    enableExpandedView: true,
+                    onPreviewClick: (previewData, event) => {
+                        log(`プレビューがクリックされました: ${previewData.id}`);
+                    },
+                    onIndividualSelection: (previewData, newState, previousState) => {
+                        log(`個別選択が変更されました: ${previewData.id} (${previousState} → ${newState})`);
+                    },
+                    onExpandedView: (previewData) => {
+                        log(`拡大表示が開かれました: ${previewData.id}`);
+                    }
+                });
+                
+                // モックデータを生成
+                testData = generateMockPreviewData();
+                
+                // ギャラリーを描画
+                const container = document.getElementById('gallery-container');
+                container.innerHTML = '';
+                
+                previewGallery.renderPreviews(testData, container);
+                
+                log(`基本ギャラリー表示完了 (${testData.length}個のプレビュー)`);
+                
+            } catch (error) {
+                log(`基本ギャラリー表示エラー: ${error.message}`, 'error');
+            }
+        }
+
+        // 実際のスクリーンショットテスト
+        async function testWithRealScreenshots() {
+            try {
+                log('実際のスクリーンショットテストを開始...');
+                
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas ライブラリが読み込まれていません');
+                }
+                
+                clearGallery();
+                
+                // AdPreviewCaptureが必要だが、ここでは簡易版を実装
+                const mockAds = document.querySelectorAll('.mock-ad');
+                const previewDataWithScreenshots = [];
+                
+                for (let i = 0; i < mockAds.length; i++) {
+                    const ad = mockAds[i];
+                    const rect = ad.getBoundingClientRect();
+                    const adType = ad.getAttribute('data-ad-type');
+                    
+                    try {
+                        // html2canvasでスクリーンショットを取得
+                        const canvas = await html2canvas(ad, {
+                            width: rect.width,
+                            height: rect.height,
+                            scale: 1,
+                            useCORS: true,
+                            allowTaint: false
+                        });
+                        
+                        // サムネイルとフルサイズ画像を生成
+                        const thumbnailCanvas = document.createElement('canvas');
+                        const thumbnailCtx = thumbnailCanvas.getContext('2d');
+                        thumbnailCanvas.width = 150;
+                        thumbnailCanvas.height = 100;
+                        thumbnailCtx.drawImage(canvas, 0, 0, 150, 100);
+                        
+                        const fullSizeCanvas = document.createElement('canvas');
+                        const fullSizeCtx = fullSizeCanvas.getContext('2d');
+                        fullSizeCanvas.width = Math.min(canvas.width, 400);
+                        fullSizeCanvas.height = Math.min(canvas.height, 300);
+                        fullSizeCtx.drawImage(canvas, 0, 0, fullSizeCanvas.width, fullSizeCanvas.height);
+                        
+                        previewDataWithScreenshots.push({
+                            id: `preview_${i}`,
+                            element: ad,
+                            screenshot: {
+                                thumbnail: thumbnailCanvas.toDataURL('image/png', 0.8),
+                                thumbnailFormat: 'png',
+                                thumbnailSize: { width: 150, height: 100 },
+                                fullSize: fullSizeCanvas.toDataURL('image/png', 0.8),
+                                fullSizeFormat: 'png',
+                                fullSizeSize: { width: fullSizeCanvas.width, height: fullSizeCanvas.height },
+                                original: { width: canvas.width, height: canvas.height }
+                            },
+                            elementInfo: {
+                                tagName: ad.tagName,
+                                className: ad.className,
+                                id: ad.id || '',
+                                position: { x: rect.left, y: rect.top },
+                                size: { width: rect.width, height: rect.height },
+                                zIndex: window.getComputedStyle(ad).zIndex || 'auto',
+                                type: adType === 'overlay' ? 'オーバーレイ広告' : 
+                                      adType === 'banner' ? 'バナー広告' : 
+                                      adType === 'popup' ? 'ポップアップ広告' : '広告要素'
+                            },
+                            captureTime: Math.random() * 200 + 100,
+                            timestamp: Date.now()
+                        });
+                        
+                        log(`スクリーンショット取得完了: ${adType} (${i + 1}/${mockAds.length})`);
+                        
+                    } catch (error) {
+                        log(`スクリーンショット取得失敗: ${adType} - ${error.message}`, 'error');
+                        
+                        // フォールバックデータを追加
+                        previewDataWithScreenshots.push({
+                            id: `preview_${i}`,
+                            element: ad,
+                            screenshot: null,
+                            elementInfo: {
+                                tagName: ad.tagName,
+                                className: ad.className,
+                                id: ad.id || '',
+                                position: { x: rect.left, y: rect.top },
+                                size: { width: rect.width, height: rect.height },
+                                zIndex: window.getComputedStyle(ad).zIndex || 'auto',
+                                type: adType === 'overlay' ? 'オーバーレイ広告' : 
+                                      adType === 'banner' ? 'バナー広告' : 
+                                      adType === 'popup' ? 'ポップアップ広告' : '広告要素'
+                            },
+                            fallback: {
+                                reason: 'capture_failed',
+                                description: 'スクリーンショットの取得に失敗しました'
+                            },
+                            captureTime: 0,
+                            timestamp: Date.now()
+                        });
+                    }
+                }
+                
+                // PreviewGalleryインスタンスを作成
+                previewGallery = new PreviewGallery({
+                    debugMode: true,
+                    showElementInfo: true,
+                    enableIndividualSelection: true,
+                    enableExpandedView: true,
+                    onPreviewClick: (previewData, event) => {
+                        log(`プレビューがクリックされました: ${previewData.id}`);
+                    },
+                    onIndividualSelection: (previewData, newState, previousState) => {
+                        log(`個別選択が変更されました: ${previewData.id} (${previousState} → ${newState})`);
+                    },
+                    onExpandedView: (previewData) => {
+                        log(`拡大表示が開かれました: ${previewData.id}`);
+                    }
+                });
+                
+                // ギャラリーを描画
+                const container = document.getElementById('gallery-container');
+                container.innerHTML = '';
+                
+                await previewGallery.renderPreviews(previewDataWithScreenshots, container);
+                testData = previewDataWithScreenshots;
+                
+                log(`実際のスクリーンショット表示完了 (${previewDataWithScreenshots.length}個のプレビュー)`);
+                
+            } catch (error) {
+                log(`実際のスクリーンショットテストエラー: ${error.message}`, 'error');
+            }
+        }
+
+        // フォールバック表示テスト
+        function testFallbackDisplay() {
+            try {
+                log('フォールバック表示テストを開始...');
+                
+                clearGallery();
+                
+                // フォールバックデータを生成
+                const fallbackData = [
+                    {
+                        id: 'fallback_1',
+                        element: document.querySelector('.mock-ad'),
+                        screenshot: null,
+                        elementInfo: {
+                            tagName: 'DIV',
+                            className: 'mock-ad overlay-ad',
+                            id: 'ad-overlay-1',
+                            position: { x: 100, y: 200 },
+                            size: { width: 320, height: 240 },
+                            zIndex: 1000,
+                            type: 'オーバーレイ広告'
+                        },
+                        fallback: {
+                            reason: 'capture_failed',
+                            description: 'スクリーンショットの取得に失敗しました'
+                        },
+                        captureTime: 0,
+                        timestamp: Date.now()
+                    },
+                    {
+                        id: 'fallback_2',
+                        element: document.querySelector('.mock-ad.banner'),
+                        screenshot: null,
+                        elementInfo: {
+                            tagName: 'IFRAME',
+                            className: 'banner-ad',
+                            id: 'ad-banner-1',
+                            position: { x: 0, y: 0 },
+                            size: { width: 728, height: 90 },
+                            zIndex: 'auto',
+                            type: 'バナー広告'
+                        },
+                        fallback: {
+                            reason: 'not_visible',
+                            description: '要素が画面外にあります'
+                        },
+                        captureTime: 0,
+                        timestamp: Date.now()
+                    }
+                ];
+                
+                // PreviewGalleryインスタンスを作成
+                previewGallery = new PreviewGallery({
+                    debugMode: true,
+                    showElementInfo: true,
+                    enableIndividualSelection: true,
+                    enableExpandedView: true
+                });
+                
+                // ギャラリーを描画
+                const container = document.getElementById('gallery-container');
+                container.innerHTML = '';
+                
+                previewGallery.renderPreviews(fallbackData, container);
+                testData = fallbackData;
+                
+                log(`フォールバック表示完了 (${fallbackData.length}個のプレビュー)`);
+                
+            } catch (error) {
+                log(`フォールバック表示テストエラー: ${error.message}`, 'error');
+            }
+        }
+
+        // 個別選択機能テスト
+        function testIndividualSelection() {
+            if (!previewGallery || testData.length === 0) {
+                log('先にギャラリーを表示してください', 'error');
+                return;
+            }
+            
+            try {
+                log('個別選択機能テストを開始...');
+                
+                // 最初のプレビューを許可
+                if (testData[0]) {
+                    previewGallery.handleIndividualSelection(testData[0].id, 'allow');
+                    log(`${testData[0].id} を許可に設定`);
+                }
+                
+                // 2番目のプレビューをブロック
+                if (testData[1]) {
+                    previewGallery.handleIndividualSelection(testData[1].id, 'block');
+                    log(`${testData[1].id} をブロックに設定`);
+                }
+                
+                // 選択状態を確認
+                const selectedStates = previewGallery.getSelectedStates();
+                log(`現在の選択状態: ${JSON.stringify(Object.fromEntries(selectedStates))}`);
+                
+                log('個別選択機能テスト完了');
+                
+            } catch (error) {
+                log(`個別選択機能テストエラー: ${error.message}`, 'error');
+            }
+        }
+
+        // 拡大表示テスト
+        function testExpandedView() {
+            if (!previewGallery || testData.length === 0) {
+                log('先にギャラリーを表示してください', 'error');
+                return;
+            }
+            
+            try {
+                log('拡大表示テストを開始...');
+                
+                if (testData[0]) {
+                    previewGallery.showExpandedView(testData[0].id);
+                    log(`${testData[0].id} の拡大表示を開きました`);
+                }
+                
+            } catch (error) {
+                log(`拡大表示テストエラー: ${error.message}`, 'error');
+            }
+        }
+
+        // 一括操作テスト
+        function testBulkOperations() {
+            if (!previewGallery || testData.length === 0) {
+                log('先にギャラリーを表示してください', 'error');
+                return;
+            }
+            
+            try {
+                log('一括操作テストを開始...');
+                
+                // すべて許可
+                previewGallery.selectAll('allow');
+                log('すべてのプレビューを許可に設定');
+                
+                setTimeout(() => {
+                    // すべてブロック
+                    previewGallery.selectAll('block');
+                    log('すべてのプレビューをブロックに設定');
+                    
+                    setTimeout(() => {
+                        // リセット
+                        previewGallery.resetAllSelections();
+                        log('すべての選択をリセット');
+                        
+                        log('一括操作テスト完了');
+                    }, 1000);
+                }, 1000);
+                
+            } catch (error) {
+                log(`一括操作テストエラー: ${error.message}`, 'error');
+            }
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            log('PreviewGallery テストページが読み込まれました');
+            log('テストボタンをクリックして機能をテストしてください');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 5 実装検証</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-ad {
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 10px;
+            border-radius: 8px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+        }
+        .error {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Task 5: UserChoiceDialogへのプレビュー機能統合 - 検証</h1>
+        
+        <h2>実装確認項目</h2>
+        <div id="implementation-check"></div>
+        
+        <h2>テスト用広告要素</h2>
+        <div class="test-ad" id="test-ad-1">テスト広告 1</div>
+        <div class="test-ad" id="test-ad-2">テスト広告 2</div>
+        
+        <h2>機能テスト</h2>
+        <button class="test-button" onclick="testPreviewIntegration()">プレビュー統合テスト</button>
+        <button class="test-button" onclick="testIndividualSelection()">個別選択テスト</button>
+        <button class="test-button" onclick="testBulkActions()">一括操作テスト</button>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <!-- 必要なライブラリ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- コンポーネント -->
+    <script src="content/ad-preview-capture.js"></script>
+    <script src="content/preview-gallery.js"></script>
+    <script src="content/user-choice-dialog.js"></script>
+
+    <script>
+        // 実装確認
+        function checkImplementation() {
+            const checks = [
+                {
+                    name: 'UserChoiceDialog クラス存在',
+                    check: () => typeof UserChoiceDialog !== 'undefined'
+                },
+                {
+                    name: 'プレビューコンポーネント初期化',
+                    check: () => window.userChoiceDialog && 
+                                 window.userChoiceDialog.previewGallery !== null &&
+                                 window.userChoiceDialog.adPreviewCapture !== null
+                },
+                {
+                    name: 'generatePreviews メソッド存在',
+                    check: () => typeof window.userChoiceDialog.generatePreviews === 'function'
+                },
+                {
+                    name: 'handlePreviewSelection メソッド存在',
+                    check: () => typeof window.userChoiceDialog.handlePreviewSelection === 'function'
+                },
+                {
+                    name: 'handleBulkAction メソッド存在',
+                    check: () => typeof window.userChoiceDialog.handleBulkAction === 'function'
+                },
+                {
+                    name: 'addBulkActions メソッド存在',
+                    check: () => typeof window.userChoiceDialog.addBulkActions === 'function'
+                }
+            ];
+
+            const checkResults = checks.map(check => ({
+                ...check,
+                result: check.check()
+            }));
+
+            const checkHtml = checkResults.map(check => 
+                `<div class="status ${check.result ? '' : 'error'}">
+                    ${check.result ? '✅' : '❌'} ${check.name}
+                </div>`
+            ).join('');
+
+            document.getElementById('implementation-check').innerHTML = checkHtml;
+            
+            return checkResults.every(check => check.result);
+        }
+
+        // プレビュー統合テスト
+        async function testPreviewIntegration() {
+            try {
+                showResult('プレビュー統合テストを開始...');
+                
+                const mockAds = [{
+                    element: document.getElementById('test-ad-1'),
+                    type: 'overlay',
+                    id: 'test-ad-1'
+                }];
+
+                // ダイアログを表示（自動的に閉じるまで待つ）
+                setTimeout(() => {
+                    // 5秒後に自動的に許可ボタンをクリック
+                    const allowButton = document.querySelector('.ad-choice-button-allow');
+                    if (allowButton) {
+                        allowButton.click();
+                    }
+                }, 5000);
+
+                const result = await window.userChoiceDialog.showChoiceDialog(mockAds);
+                showResult(`プレビュー統合テスト完了: ${result.action}`);
+                
+            } catch (error) {
+                showResult(`プレビュー統合テストエラー: ${error.message}`, true);
+            }
+        }
+
+        // 個別選択テスト
+        async function testIndividualSelection() {
+            try {
+                showResult('個別選択テストを開始...');
+                
+                const mockAds = [
+                    {
+                        element: document.getElementById('test-ad-1'),
+                        type: 'overlay',
+                        id: 'test-ad-1'
+                    },
+                    {
+                        element: document.getElementById('test-ad-2'),
+                        type: 'banner',
+                        id: 'test-ad-2'
+                    }
+                ];
+
+                // ダイアログを表示
+                setTimeout(() => {
+                    // 5秒後に自動的に許可ボタンをクリック
+                    const allowButton = document.querySelector('.ad-choice-button-allow');
+                    if (allowButton) {
+                        allowButton.click();
+                    }
+                }, 5000);
+
+                const result = await window.userChoiceDialog.showChoiceDialog(mockAds);
+                showResult(`個別選択テスト完了: ${result.action}, 個別選択: ${JSON.stringify(result.individualChoices)}`);
+                
+            } catch (error) {
+                showResult(`個別選択テストエラー: ${error.message}`, true);
+            }
+        }
+
+        // 一括操作テスト
+        function testBulkActions() {
+            try {
+                showResult('一括操作テストを開始...');
+                
+                // 一括操作ボタンのテスト
+                const container = document.createElement('div');
+                window.userChoiceDialog.addBulkActions('test-dialog', container);
+                
+                const bulkActions = container.querySelector('.ad-choice-bulk-actions');
+                const allowButton = container.querySelector('[data-bulk-action="allow"]');
+                const blockButton = container.querySelector('[data-bulk-action="block"]');
+                
+                if (bulkActions && allowButton && blockButton) {
+                    showResult('一括操作テスト完了: ボタンが正しく作成されました');
+                } else {
+                    showResult('一括操作テストエラー: ボタンの作成に失敗', true);
+                }
+                
+            } catch (error) {
+                showResult(`一括操作テストエラー: ${error.message}`, true);
+            }
+        }
+
+        // 結果表示
+        function showResult(message, isError = false) {
+            const results = document.getElementById('test-results');
+            const div = document.createElement('div');
+            div.className = isError ? 'status error' : 'status';
+            div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            results.appendChild(div);
+            
+            console.log(message);
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const implementationOk = checkImplementation();
+                if (implementationOk) {
+                    showResult('✅ すべての実装確認項目が完了しました');
+                } else {
+                    showResult('❌ 一部の実装確認項目が失敗しました', true);
+                }
+            }, 1000);
+        });
+
+        // エラーハンドリング
+        window.addEventListener('error', function(e) {
+            showResult(`グローバルエラー: ${e.message}`, true);
+        });
+
+        console.log('Task 5 実装検証準備完了');
+    </script>
+</body>
+</html>

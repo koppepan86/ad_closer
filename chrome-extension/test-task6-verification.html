@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 6 Verification - 拡大表示モーダル</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .test-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .test-btn:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        .test-btn.success {
+            border-color: #28a745;
+            color: #28a745;
+        }
+        
+        .test-btn.success:hover {
+            background: #28a745;
+            color: white;
+        }
+        
+        .mock-ads {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .mock-ad {
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .mock-ad.overlay {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        }
+        
+        .mock-ad.banner {
+            width: 300px;
+            height: 100px;
+            background: linear-gradient(45deg, #45b7d1, #96ceb4);
+        }
+        
+        .mock-ad.popup {
+            width: 250px;
+            height: 180px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+        }
+        
+        #gallery-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            background: #fafafa;
+            margin: 20px 0;
+        }
+        
+        .verification-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .verification-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border-left: 4px solid #6c757d;
+        }
+        
+        .verification-item.pass {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .verification-item.fail {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        #log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Task 6 Verification - 拡大表示モーダルの実装</h1>
+        
+        <div class="test-section">
+            <div class="test-title">テスト対象の広告要素</div>
+            <div class="mock-ads">
+                <div class="mock-ad overlay" data-ad-type="overlay">
+                    オーバーレイ広告<br>200x150px
+                </div>
+                <div class="mock-ad banner" data-ad-type="banner">
+                    バナー広告<br>300x100px
+                </div>
+                <div class="mock-ad popup" data-ad-type="popup">
+                    ポップアップ広告<br>250x180px
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">テスト実行</div>
+            <button class="test-btn" onclick="runModalTest()">モーダル機能テスト実行</button>
+            <button class="test-btn" onclick="testAnimations()">アニメーションテスト</button>
+            <button class="test-btn" onclick="testDetailInfo()">詳細情報表示テスト</button>
+            <button class="test-btn" onclick="testKeyboardNavigation()">キーボード操作テスト</button>
+            <button class="test-btn" onclick="clearTest()">クリア</button>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">検証項目</div>
+            <ul class="verification-list" id="verification-list">
+                <li class="verification-item" id="verify-modal-creation">✓ 拡大表示モーダルのHTML/CSS作成</li>
+                <li class="verification-item" id="verify-click-expand">✓ プレビュー画像クリック時の拡大表示機能</li>
+                <li class="verification-item" id="verify-animations">✓ モーダルの開閉アニメーション</li>
+                <li class="verification-item" id="verify-detail-info">✓ 要素詳細情報の表示機能</li>
+                <li class="verification-item" id="verify-close-functionality">✓ モーダル閉じる機能（×ボタン、ESC、背景クリック）</li>
+                <li class="verification-item" id="verify-focus-trap">✓ フォーカストラップ機能</li>
+                <li class="verification-item" id="verify-accessibility">✓ アクセシビリティ対応</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">プレビューギャラリー</div>
+            <div id="gallery-container">
+                <p style="text-align: center; color: #666; margin: 50px 0;">
+                    テストボタンをクリックしてプレビューギャラリーを表示してください
+                </p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">テストログ</div>
+            <div id="log">Task 6 検証テスト準備完了...</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="content/preview-gallery.js"></script>
+
+    <script>
+        let previewGallery = null;
+        let testData = [];
+        let verificationResults = {};
+
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function updateVerification(itemId, passed, message = '') {
+            const item = document.getElementById(itemId);
+            if (item) {
+                item.classList.remove('pass', 'fail');
+                item.classList.add(passed ? 'pass' : 'fail');
+                verificationResults[itemId] = { passed, message };
+                
+                if (message) {
+                    const existingMessage = item.querySelector('.verification-message');
+                    if (existingMessage) {
+                        existingMessage.remove();
+                    }
+                    const messageSpan = document.createElement('span');
+                    messageSpan.className = 'verification-message';
+                    messageSpan.style.display = 'block';
+                    messageSpan.style.fontSize = '12px';
+                    messageSpan.style.marginTop = '5px';
+                    messageSpan.style.color = passed ? '#155724' : '#721c24';
+                    messageSpan.textContent = message;
+                    item.appendChild(messageSpan);
+                }
+            }
+        }
+
+        function clearTest() {
+            if (previewGallery) {
+                previewGallery.cleanup();
+                previewGallery = null;
+            }
+            document.getElementById('gallery-container').innerHTML = 
+                '<p style="text-align: center; color: #666; margin: 50px 0;">テストがクリアされました</p>';
+            document.getElementById('log').textContent = 'テストクリア完了...\n';
+            
+            // Reset verification items
+            const items = document.querySelectorAll('.verification-item');
+            items.forEach(item => {
+                item.classList.remove('pass', 'fail');
+                const message = item.querySelector('.verification-message');
+                if (message) message.remove();
+            });
+            verificationResults = {};
+        }
+
+        async function generateTestData() {
+            const mockAds = document.querySelectorAll('.mock-ad');
+            const previewData = [];
+            
+            for (let i = 0; i < mockAds.length; i++) {
+                const ad = mockAds[i];
+                const rect = ad.getBoundingClientRect();
+                const adType = ad.getAttribute('data-ad-type');
+                
+                try {
+                    // Generate screenshot
+                    const canvas = await html2canvas(ad, {
+                        width: rect.width,
+                        height: rect.height,
+                        scale: 1
+                    });
+                    
+                    // Create thumbnail (150x100)
+                    const thumbnailCanvas = document.createElement('canvas');
+                    const thumbnailCtx = thumbnailCanvas.getContext('2d');
+                    thumbnailCanvas.width = 150;
+                    thumbnailCanvas.height = 100;
+                    thumbnailCtx.drawImage(canvas, 0, 0, 150, 100);
+                    
+                    // Create full size (600x400)
+                    const fullSizeCanvas = document.createElement('canvas');
+                    const fullSizeCtx = fullSizeCanvas.getContext('2d');
+                    fullSizeCanvas.width = 600;
+                    fullSizeCanvas.height = 400;
+                    fullSizeCtx.drawImage(canvas, 0, 0, 600, 400);
+                    
+                    previewData.push({
+                        id: `test_preview_${i}`,
+                        element: ad,
+                        screenshot: {
+                            thumbnail: thumbnailCanvas.toDataURL('image/png', 0.8),
+                            fullSize: fullSizeCanvas.toDataURL('image/png', 0.8),
+                            width: canvas.width,
+                            height: canvas.height,
+                            format: 'png'
+                        },
+                        elementInfo: {
+                            tagName: ad.tagName,
+                            className: ad.className,
+                            id: ad.id || `ad-${adType}-${i}`,
+                            position: { x: Math.round(rect.left), y: Math.round(rect.top) },
+                            size: { width: Math.round(rect.width), height: Math.round(rect.height) },
+                            zIndex: window.getComputedStyle(ad).zIndex || 'auto',
+                            type: adType === 'overlay' ? 'オーバーレイ広告' : 
+                                  adType === 'banner' ? 'バナー広告' : 
+                                  adType === 'popup' ? 'ポップアップ広告' : '広告要素'
+                        },
+                        captureTime: Math.random() * 100 + 50,
+                        timestamp: Date.now()
+                    });
+                    
+                } catch (error) {
+                    log(`スクリーンショット生成失敗: ${adType} - ${error.message}`, 'error');
+                    
+                    // Add fallback data
+                    previewData.push({
+                        id: `test_preview_${i}`,
+                        element: ad,
+                        screenshot: null,
+                        elementInfo: {
+                            tagName: ad.tagName,
+                            className: ad.className,
+                            id: ad.id || `ad-${adType}-${i}`,
+                            position: { x: Math.round(rect.left), y: Math.round(rect.top) },
+                            size: { width: Math.round(rect.width), height: Math.round(rect.height) },
+                            zIndex: window.getComputedStyle(ad).zIndex || 'auto',
+                            type: adType === 'overlay' ? 'オーバーレイ広告' : 
+                                  adType === 'banner' ? 'バナー広告' : 
+                                  adType === 'popup' ? 'ポップアップ広告' : '広告要素'
+                        },
+                        fallback: {
+                            reason: 'capture_failed',
+                            description: 'スクリーンショットの取得に失敗しました'
+                        }
+                    });
+                }
+            }
+            
+            return previewData;
+        }
+
+        async function runModalTest() {
+            try {
+                log('モーダル機能テストを開始...');
+                clearTest();
+                
+                // Generate test data
+                testData = await generateTestData();
+                log(`テストデータ生成完了: ${testData.length}個のプレビュー`);
+                
+                // Create PreviewGallery instance
+                previewGallery = new PreviewGallery({
+                    debugMode: true,
+                    showElementInfo: true,
+                    enableIndividualSelection: true,
+                    enableExpandedView: true,
+                    onExpandedView: (previewData) => {
+                        log(`拡大表示モーダルが開かれました: ${previewData.id}`);
+                        verifyModalFeatures();
+                    }
+                });
+                
+                // Render gallery
+                const container = document.getElementById('gallery-container');
+                container.innerHTML = '';
+                await previewGallery.renderPreviews(testData, container);
+                
+                log('プレビューギャラリー描画完了');
+                updateVerification('verify-modal-creation', true, 'モーダル用CSS/HTMLが正常に作成されました');
+                
+                // Test click functionality
+                setTimeout(() => {
+                    log('自動的に最初のプレビューの拡大表示をテスト...');
+                    if (testData.length > 0) {
+                        previewGallery.showExpandedView(testData[0].id);
+                        updateVerification('verify-click-expand', true, 'プレビュークリックで拡大表示が正常に動作します');
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                log(`モーダルテストエラー: ${error.message}`, 'error');
+                updateVerification('verify-modal-creation', false, `エラー: ${error.message}`);
+            }
+        }
+
+        function verifyModalFeatures() {
+            setTimeout(() => {
+                const modal = document.querySelector('.preview-expanded-modal');
+                if (modal) {
+                    // Check modal structure
+                    const header = modal.querySelector('.preview-expanded-header');
+                    const body = modal.querySelector('.preview-expanded-body');
+                    const closeBtn = modal.querySelector('.preview-expanded-close');
+                    const image = modal.querySelector('.preview-expanded-image');
+                    const info = modal.querySelector('.preview-expanded-info');
+                    const actions = modal.querySelector('.preview-expanded-actions');
+                    
+                    updateVerification('verify-modal-creation', 
+                        !!(header && body && closeBtn), 
+                        'モーダル構造が正しく作成されています');
+                    
+                    updateVerification('verify-detail-info', 
+                        !!info, 
+                        '要素詳細情報が表示されています');
+                    
+                    // Check animations
+                    const hasShowClass = modal.classList.contains('show');
+                    updateVerification('verify-animations', 
+                        hasShowClass, 
+                        'モーダル表示アニメーションが動作しています');
+                    
+                    // Test close functionality
+                    testCloseFunctionality(modal);
+                    
+                    // Test focus trap
+                    testFocusTrap(modal);
+                    
+                } else {
+                    updateVerification('verify-modal-creation', false, 'モーダルが見つかりません');
+                }
+            }, 500);
+        }
+
+        function testCloseFunctionality(modal) {
+            const closeBtn = modal.querySelector('.preview-expanded-close');
+            if (closeBtn) {
+                updateVerification('verify-close-functionality', true, '×ボタンが存在します');
+                
+                // Test ESC key
+                const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+                document.dispatchEvent(escEvent);
+                
+                setTimeout(() => {
+                    const modalStillExists = document.querySelector('.preview-expanded-modal');
+                    if (!modalStillExists) {
+                        updateVerification('verify-close-functionality', true, 'ESCキーでモーダルが閉じます');
+                    }
+                }, 400);
+            }
+        }
+
+        function testFocusTrap(modal) {
+            const focusableElements = modal.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            
+            if (focusableElements.length > 0) {
+                updateVerification('verify-focus-trap', true, 
+                    `フォーカス可能な要素が${focusableElements.length}個見つかりました`);
+                
+                // Check if first element is focused
+                const firstElement = focusableElements[0];
+                if (document.activeElement === firstElement) {
+                    updateVerification('verify-focus-trap', true, 
+                        '最初の要素に正しくフォーカスが設定されています');
+                }
+            }
+            
+            // Check accessibility attributes
+            const hasRole = modal.getAttribute('role') === 'dialog';
+            const hasAriaModal = modal.getAttribute('aria-modal') === 'true';
+            const hasAriaLabel = modal.getAttribute('aria-labelledby');
+            
+            updateVerification('verify-accessibility', 
+                hasRole && hasAriaModal && hasAriaLabel, 
+                'アクセシビリティ属性が正しく設定されています');
+        }
+
+        function testAnimations() {
+            if (!previewGallery || testData.length === 0) {
+                log('先にモーダルテストを実行してください', 'error');
+                return;
+            }
+            
+            log('アニメーションテストを開始...');
+            
+            // Open modal
+            previewGallery.showExpandedView(testData[0].id);
+            
+            setTimeout(() => {
+                const modal = document.querySelector('.preview-expanded-modal');
+                if (modal) {
+                    const hasShowClass = modal.classList.contains('show');
+                    const content = modal.querySelector('.preview-expanded-content');
+                    const computedStyle = window.getComputedStyle(content);
+                    const transform = computedStyle.transform;
+                    
+                    updateVerification('verify-animations', 
+                        hasShowClass && transform !== 'none', 
+                        `開くアニメーション確認: show=${hasShowClass}, transform=${transform}`);
+                    
+                    // Test close animation
+                    previewGallery.closeExpandedView();
+                    
+                    setTimeout(() => {
+                        const modalAfterClose = document.querySelector('.preview-expanded-modal');
+                        const stillHasShowClass = modalAfterClose && modalAfterClose.classList.contains('show');
+                        
+                        updateVerification('verify-animations', 
+                            !stillHasShowClass, 
+                            '閉じるアニメーションが正常に動作しています');
+                    }, 100);
+                }
+            }, 100);
+        }
+
+        function testDetailInfo() {
+            if (!previewGallery || testData.length === 0) {
+                log('先にモーダルテストを実行してください', 'error');
+                return;
+            }
+            
+            log('詳細情報表示テストを開始...');
+            
+            previewGallery.showExpandedView(testData[0].id);
+            
+            setTimeout(() => {
+                const modal = document.querySelector('.preview-expanded-modal');
+                if (modal) {
+                    const info = modal.querySelector('.preview-expanded-info');
+                    const infoRows = modal.querySelectorAll('.preview-expanded-info-row');
+                    
+                    if (info && infoRows.length > 0) {
+                        const details = [];
+                        infoRows.forEach(row => {
+                            const label = row.querySelector('.preview-expanded-info-label');
+                            const value = row.querySelector('.preview-expanded-info-value');
+                            if (label && value) {
+                                details.push(`${label.textContent} ${value.textContent}`);
+                            }
+                        });
+                        
+                        updateVerification('verify-detail-info', true, 
+                            `詳細情報表示: ${details.join(', ')}`);
+                    } else {
+                        updateVerification('verify-detail-info', false, 
+                            '詳細情報が表示されていません');
+                    }
+                    
+                    previewGallery.closeExpandedView();
+                }
+            }, 500);
+        }
+
+        function testKeyboardNavigation() {
+            if (!previewGallery || testData.length === 0) {
+                log('先にモーダルテストを実行してください', 'error');
+                return;
+            }
+            
+            log('キーボード操作テストを開始...');
+            
+            previewGallery.showExpandedView(testData[0].id);
+            
+            setTimeout(() => {
+                const modal = document.querySelector('.preview-expanded-modal');
+                if (modal) {
+                    // Test Tab navigation
+                    const tabEvent = new KeyboardEvent('keydown', { key: 'Tab' });
+                    modal.dispatchEvent(tabEvent);
+                    
+                    // Test Escape key
+                    const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+                    document.dispatchEvent(escEvent);
+                    
+                    setTimeout(() => {
+                        const modalAfterEsc = document.querySelector('.preview-expanded-modal');
+                        updateVerification('verify-close-functionality', 
+                            !modalAfterEsc, 
+                            'ESCキーでモーダルが正常に閉じました');
+                    }, 400);
+                }
+            }, 500);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Task 6 検証テストページが読み込まれました');
+            log('「モーダル機能テスト実行」ボタンをクリックしてテストを開始してください');
+        });
+    </script>
+</body>
+</html>

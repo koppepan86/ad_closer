@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>ポップアップ広告ブロッカー</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="popup-container">
+    <!-- ヘッダー -->
+    <header class="popup-header">
+      <h1 class="popup-title">ポップアップ広告ブロッカー</h1>
+      <div class="extension-status" id="extension-status">
+        <span class="status-text" id="status-text">有効</span>
+      </div>
+    </header>
+
+    <!-- メイン切り替えコントロール -->
+    <section class="main-controls">
+      <div class="toggle-container">
+        <label class="toggle-label" for="extension-toggle">
+          拡張機能を有効にする
+        </label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="extension-toggle" class="toggle-input" checked>
+          <span class="toggle-slider" role="switch" aria-checked="true" tabindex="0"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 統計表示 -->
+    <section class="statistics-section">
+      <h2 class="section-title">統計</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number" id="total-blocked">0</span>
+          <span class="stat-label">ブロック済み</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="today-blocked">0</span>
+          <span class="stat-label">今日</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="current-site-blocked">0</span>
+          <span class="stat-label">このサイト</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 現在のサイト管理 -->
+    <section class="current-site-section">
+      <h2 class="section-title">現在のサイト</h2>
+      <div class="site-info">
+        <span class="site-domain" id="current-domain">読み込み中...</span>
+        <button class="whitelist-btn" id="whitelist-btn" type="button">
+          ホワイトリストに追加
+        </button>
+      </div>
+    </section>
+
+    <!-- 最近のアクティビティ -->
+    <section class="recent-activity-section">
+      <h2 class="section-title">最近のアクティビティ</h2>
+      <div class="activity-list" id="activity-list">
+        <div class="activity-item">
+          <span class="activity-text">アクティビティを読み込み中...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="popup-footer">
+      <button class="settings-btn" id="settings-btn" type="button">
+        詳細設定
+      </button>
+    </footer>
+  </div>
+  <script src="popup-interaction-notifier.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

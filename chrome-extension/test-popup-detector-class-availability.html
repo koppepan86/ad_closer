@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PopupDetector Class Availability Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: #0056b3;
+        }
+        
+        .status-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .timeline {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>PopupDetector Class Availability Test</h1>
+        <p>PopupDetectorクラスの利用可能性と読み込み順序をテストします。</p>
+        
+        <div class="status-display">
+            <h3>Current Status:</h3>
+            <div id="current-status"></div>
+        </div>
+        
+        <div class="timeline">
+            <h3>Loading Timeline:</h3>
+            <div id="loading-timeline"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="button" onclick="testClassAvailability()">クラス利用可能性テスト</button>
+            <button class="button" onclick="testLoadingOrder()">読み込み順序テスト</button>
+            <button class="button" onclick="testGuardIntegration()">Guard統合テスト</button>
+            <button class="button" onclick="testComponentRecovery()">回復機能テスト</button>
+            <button class="button" onclick="testInitializationFlow()">初期化フローテスト</button>
+            <button class="button" onclick="runAllTests()">全テスト実行</button>
+            <button class="button" onclick="clearResults()">結果クリア</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let loadingTimeline = [];
+
+        // 読み込みタイムラインを記録
+        function logTimeline(message, type = 'info') {
+            const timestamp = new Date().toISOString();
+            const timelineEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            loadingTimeline.push(timelineEntry);
+            
+            const timelineDiv = document.getElementById('loading-timeline');
+            timelineDiv.textContent = loadingTimeline.slice(-50).join('\n');
+            timelineDiv.scrollTop = timelineDiv.scrollHeight;
+        }
+
+        function addTestResult(testName, success, message, details = null) {
+            const result = {
+                testName,
+                success,
+                message,
+                details,
+                timestamp: new Date().toISOString()
+            };
+            
+            testResults.push(result);
+            displayTestResult(result);
+            logTimeline(`Test: ${testName} - ${success ? 'PASS' : 'FAIL'}: ${message}`, success ? 'success' : 'error');
+        }
+
+        function displayTestResult(result) {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${result.success ? 'success' : 'error'}`;
+            
+            let content = `[${result.timestamp}] ${result.testName}: ${result.message}`;
+            if (result.details) {
+                content += '\n詳細: ' + JSON.stringify(result.details, null, 2);
+            }
+            
+            resultDiv.textContent = content;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function updateStatus() {
+            const statusDiv = document.getElementById('current-status');
+            
+            const status = {
+                timestamp: new Date().toISOString(),
+                popupDetectorClass: typeof PopupDetector,
+                popupDetectorInstance: typeof window.popupDetector,
+                isInitialized: window.popupDetector ? window.popupDetector.initialized : false,
+                guardAvailable: typeof window.PopupDetectorGuard,
+                guardReady: window.PopupDetectorGuard ? window.PopupDetectorGuard.isReady() : false,
+                componentRecoveryAvailable: typeof window.ComponentRecoveryManager,
+                scriptsLoaded: {
+                    popupDetectorSafe: !!document.querySelector('script[src*="popup-detector-safe"]'),
+                    popupDetectorGuard: !!document.querySelector('script[src*="popup-detector-guard"]'),
+                    componentRecovery: !!document.querySelector('script[src*="component-recovery"]')
+                }
+            };
+            
+            statusDiv.textContent = JSON.stringify(status, null, 2);
+        }
+
+        function testClassAvailability() {
+            try {
+                const hasClass = typeof PopupDetector === 'function';
+                const hasConstructor = hasClass && PopupDetector.prototype && PopupDetector.prototype.constructor;
+                const hasRequiredMethods = hasClass && [
+                    'initialize', 'detectPopups', 'handleMutations', 'getStats', 'cleanup'
+                ].every(method => typeof PopupDetector.prototype[method] === 'function');
+                
+                const success = hasClass && hasConstructor && hasRequiredMethods;
+                
+                addTestResult(
+                    'クラス利用可能性テスト',
+                    success,
+                    success ? 'PopupDetectorクラスが正常に利用可能です' : 'PopupDetectorクラスに問題があります',
+                    { 
+                        hasClass,
+                        hasConstructor,
+                        hasRequiredMethods,
+                        classType: typeof PopupDetector,
+                        prototype: hasClass ? Object.getOwnPropertyNames(PopupDetector.prototype) : null
+                    }
+                );
+            } catch (error) {
+                addTestResult('クラス利用可能性テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testLoadingOrder() {
+            try {
+                const loadingOrder = [];
+                
+                // スクリプトタグの順序を確認
+                const scripts = document.querySelectorAll('script[src]');
+                scripts.forEach((script, index) => {
+                    const src = script.src;
+                    if (src.includes('popup-detector') || src.includes('component-recovery')) {
+                        loadingOrder.push({
+                            index,
+                            src: src.split('/').pop(),
+                            loaded: true
+                        });
+                    }
+                });
+                
+                // 期待される順序
+                const expectedOrder = [
+                    'popup-detector-safe.js',
+                    'popup-detector-guard.js',
+                    'component-recovery.js'
+                ];
+                
+                const actualOrder = loadingOrder.map(item => item.src);
+                const orderCorrect = expectedOrder.every((expected, index) => 
+                    actualOrder.includes(expected)
+                );
+                
+                addTestResult(
+                    '読み込み順序テスト',
+                    orderCorrect,
+                    orderCorrect ? '読み込み順序が正しく設定されています' : '読み込み順序に問題があります',
+                    { 
+                        expectedOrder,
+                        actualOrder,
+                        loadingOrder
+                    }
+                );
+            } catch (error) {
+                addTestResult('読み込み順序テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testGuardIntegration() {
+            try {
+                const hasGuard = typeof window.PopupDetectorGuard !== 'undefined';
+                const hasClass = typeof PopupDetector === 'function';
+                
+                if (!hasGuard) {
+                    addTestResult('Guard統合テスト', false, 'PopupDetectorGuardが存在しません');
+                    return;
+                }
+                
+                if (!hasClass) {
+                    addTestResult('Guard統合テスト', false, 'PopupDetectorクラスが存在しません');
+                    return;
+                }
+                
+                const guard = window.PopupDetectorGuard;
+                const isReady = guard.isReady();
+                const status = guard.getStatus();
+                
+                // Guard経由での安全な呼び出しテスト
+                let safeCallsWork = false;
+                try {
+                    const safeResult = guard.safeDetectPopups();
+                    safeCallsWork = Array.isArray(safeResult);
+                } catch (safeError) {
+                    console.error('Safe call error:', safeError);
+                }
+                
+                const success = isReady && safeCallsWork;
+                
+                addTestResult(
+                    'Guard統合テスト',
+                    success,
+                    success ? 'Guard統合が正常に動作しています' : 'Guard統合に問題があります',
+                    { 
+                        hasGuard,
+                        hasClass,
+                        isReady,
+                        safeCallsWork,
+                        status
+                    }
+                );
+            } catch (error) {
+                addTestResult('Guard統合テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testComponentRecovery() {
+            try {
+                const hasRecovery = typeof window.ComponentRecoveryManager !== 'undefined';
+                const hasClass = typeof PopupDetector === 'function';
+                
+                if (!hasRecovery) {
+                    addTestResult('回復機能テスト', false, 'ComponentRecoveryManagerが存在しません');
+                    return;
+                }
+                
+                if (!hasClass) {
+                    addTestResult('回復機能テスト', false, 'PopupDetectorクラスが存在しません');
+                    return;
+                }
+                
+                // ヘルスチェック機能のテスト
+                const recovery = new ComponentRecoveryManager();
+                let healthCheckWorks = false;
+                
+                try {
+                    // 非同期ヘルスチェックを実行
+                    recovery.checkPopupDetectorHealth().then(result => {
+                        addTestResult(
+                            '回復機能テスト - ヘルスチェック',
+                            result,
+                            result ? 'ヘルスチェックが成功しました' : 'ヘルスチェックが失敗しました',
+                            { healthCheckResult: result }
+                        );
+                    }).catch(error => {
+                        addTestResult(
+                            '回復機能テスト - ヘルスチェック',
+                            false,
+                            'ヘルスチェックでエラーが発生しました',
+                            { error: error.message }
+                        );
+                    });
+                    
+                    healthCheckWorks = true;
+                } catch (healthError) {
+                    console.error('Health check error:', healthError);
+                }
+                
+                addTestResult(
+                    '回復機能テスト',
+                    healthCheckWorks,
+                    healthCheckWorks ? '回復機能が利用可能です' : '回復機能に問題があります',
+                    { 
+                        hasRecovery,
+                        hasClass,
+                        healthCheckWorks
+                    }
+                );
+            } catch (error) {
+                addTestResult('回復機能テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testInitializationFlow() {
+            try {
+                const hasClass = typeof PopupDetector === 'function';
+                const hasInstance = !!window.popupDetector;
+                const isInitialized = hasInstance && window.popupDetector.initialized;
+                
+                // 初期化フローの詳細チェック
+                const initializationDetails = {
+                    classAvailable: hasClass,
+                    instanceExists: hasInstance,
+                    instanceInitialized: isInitialized,
+                    guardReady: window.PopupDetectorGuard ? window.PopupDetectorGuard.isReady() : false,
+                    recoveryAvailable: typeof window.ComponentRecoveryManager !== 'undefined'
+                };
+                
+                // 初期化イベントリスナーのテスト
+                let eventListenersWork = false;
+                try {
+                    const testHandler = () => { eventListenersWork = true; };
+                    document.addEventListener('popupDetectorInitialized', testHandler, { once: true });
+                    
+                    // イベントを手動で発火してテスト
+                    const testEvent = new CustomEvent('popupDetectorInitialized', {
+                        detail: { test: true }
+                    });
+                    document.dispatchEvent(testEvent);
+                    
+                    setTimeout(() => {
+                        document.removeEventListener('popupDetectorInitialized', testHandler);
+                    }, 100);
+                } catch (eventError) {
+                    console.error('Event listener test error:', eventError);
+                }
+                
+                const success = hasClass && hasInstance && isInitialized;
+                
+                addTestResult(
+                    '初期化フローテスト',
+                    success,
+                    success ? '初期化フローが正常に完了しています' : '初期化フローに問題があります',
+                    { 
+                        ...initializationDetails,
+                        eventListenersWork,
+                        stats: hasInstance && isInitialized ? window.popupDetector.getStats() : null
+                    }
+                );
+            } catch (error) {
+                addTestResult('初期化フローテスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            logTimeline('Starting comprehensive class availability tests', 'info');
+            
+            addTestResult('全テスト開始', true, 'PopupDetectorクラス利用可能性の全テストを実行します...');
+            
+            setTimeout(() => testClassAvailability(), 100);
+            setTimeout(() => testLoadingOrder(), 500);
+            setTimeout(() => testGuardIntegration(), 1000);
+            setTimeout(() => testComponentRecovery(), 1500);
+            setTimeout(() => testInitializationFlow(), 2000);
+            
+            setTimeout(() => {
+                const successCount = testResults.filter(r => r.success).length - 1; // -1 for start message
+                const totalCount = testResults.length - 1;
+                addTestResult(
+                    '全テスト完了',
+                    successCount === totalCount,
+                    `${successCount}/${totalCount} テストが成功しました`,
+                    { successRate: `${Math.round((successCount/totalCount) * 100)}%` }
+                );
+                logTimeline(`All tests completed: ${successCount}/${totalCount} passed`, 'info');
+            }, 3000);
+        }
+
+        function clearResults() {
+            testResults = [];
+            loadingTimeline = [];
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('loading-timeline').textContent = '';
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            logTimeline('Test page loaded', 'info');
+            updateStatus();
+            setInterval(updateStatus, 2000); // 2秒ごとにステータス更新
+            
+            // 初期状態をログ
+            logTimeline(`PopupDetector class: ${typeof PopupDetector}`, 'info');
+            logTimeline(`PopupDetector instance: ${typeof window.popupDetector}`, 'info');
+            logTimeline(`PopupDetectorGuard: ${typeof window.PopupDetectorGuard}`, 'info');
+            
+            if (window.popupDetector) {
+                logTimeline(`PopupDetector initialized: ${window.popupDetector.initialized}`, 'info');
+            }
+        });
+    </script>
+</body>
+</html>

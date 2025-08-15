@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup Button Fix Test - Updated</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: #0056b3;
+        }
+        
+        .status-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Popup Button Fix Test - Updated</h1>
+        <p>拡張機能の有効化ボタンの修正をテストします。</p>
+        
+        <div class="status-display">
+            <h3>Chrome APIs Status:</h3>
+            <div id="api-status"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="button" onclick="testChromeAPIs()">Chrome APIs テスト</button>
+            <button class="button" onclick="testStorageAPI()">Storage API テスト</button>
+            <button class="button" onclick="testUserPreferences()">ユーザー設定テスト</button>
+            <button class="button" onclick="testToggleFunction()">切り替え機能テスト</button>
+            <button class="button" onclick="testPopupInteraction()">ポップアップインタラクションテスト</button>
+            <button class="button" onclick="runAllTests()">全テスト実行</button>
+            <button class="button" onclick="clearResults()">結果クリア</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function addTestResult(testName, success, message, details = null) {
+            const result = {
+                testName,
+                success,
+                message,
+                details,
+                timestamp: new Date().toISOString()
+            };
+            
+            testResults.push(result);
+            displayTestResult(result);
+        }
+
+        function displayTestResult(result) {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${result.success ? 'success' : 'error'}`;
+            
+            let content = `[${result.timestamp}] ${result.testName}: ${result.message}`;
+            if (result.details) {
+                content += '\\n詳細: ' + JSON.stringify(result.details, null, 2);
+            }
+            
+            resultDiv.textContent = content;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function updateAPIStatus() {
+            const statusDiv = document.getElementById('api-status');
+            
+            const status = {
+                timestamp: new Date().toISOString(),
+                chrome: typeof chrome,
+                chromeStorage: typeof chrome?.storage,
+                chromeStorageLocal: typeof chrome?.storage?.local,
+                chromeRuntime: typeof chrome?.runtime,
+                chromeRuntimeSendMessage: typeof chrome?.runtime?.sendMessage,
+                extensionContext: !!chrome?.extension,
+                manifestVersion: chrome?.runtime?.getManifest?.()?.manifest_version
+            };
+            
+            statusDiv.textContent = JSON.stringify(status, null, 2);
+        }
+
+        function testChromeAPIs() {
+            try {
+                const chromeAvailable = typeof chrome !== 'undefined';
+                const storageAvailable = chromeAvailable && typeof chrome.storage !== 'undefined';
+                const runtimeAvailable = chromeAvailable && typeof chrome.runtime !== 'undefined';
+                
+                const success = chromeAvailable && storageAvailable && runtimeAvailable;
+                
+                addTestResult(
+                    'Chrome APIs テスト',
+                    success,
+                    success ? 'Chrome APIs が利用可能です' : 'Chrome APIs に問題があります',
+                    { 
+                        chromeAvailable,
+                        storageAvailable,
+                        runtimeAvailable,
+                        userAgent: navigator.userAgent
+                    }
+                );
+            } catch (error) {
+                addTestResult('Chrome APIs テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testStorageAPI() {
+            try {
+                if (!chrome?.storage?.local) {
+                    addTestResult('Storage API テスト', false, 'Chrome Storage API が利用できません');
+                    return;
+                }
+                
+                // テストデータを保存
+                const testKey = 'popupButtonTest';
+                const testValue = { test: true, timestamp: Date.now() };
+                
+                chrome.storage.local.set({ [testKey]: testValue })
+                    .then(() => {
+                        // データを読み取り
+                        return chrome.storage.local.get([testKey]);
+                    })
+                    .then((result) => {
+                        const success = result[testKey] && result[testKey].test === true;
+                        
+                        addTestResult(
+                            'Storage API テスト',
+                            success,
+                            success ? 'Storage API が正常に動作しています' : 'Storage API の読み書きに問題があります',
+                            { testValue, result: result[testKey] }
+                        );
+                        
+                        // テストデータを削除
+                        chrome.storage.local.remove([testKey]);
+                    })
+                    .catch((error) => {
+                        addTestResult('Storage API テスト', false, 'Storage API でエラーが発生しました', { error: error.message });
+                    });
+                    
+            } catch (error) {
+                addTestResult('Storage API テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testUserPreferences() {
+            try {
+                if (!chrome?.storage?.local) {
+                    addTestResult('ユーザー設定テスト', false, 'Storage API が利用できません');
+                    return;
+                }
+                
+                // 現在のユーザー設定を取得
+                chrome.storage.local.get(['userPreferences'])
+                    .then((result) => {
+                        const preferences = result.userPreferences || {};
+                        const hasExtensionEnabled = 'extensionEnabled' in preferences;
+                        const extensionEnabled = preferences.extensionEnabled !== false;
+                        
+                        addTestResult(
+                            'ユーザー設定テスト',
+                            true,
+                            `ユーザー設定の取得に成功しました`,
+                            { 
+                                preferences,
+                                hasExtensionEnabled,
+                                extensionEnabled,
+                                storageResult: result
+                            }
+                        );
+                    })
+                    .catch((error) => {
+                        addTestResult('ユーザー設定テスト', false, 'ユーザー設定取得でエラーが発生しました', { error: error.message });
+                    });
+                    
+            } catch (error) {
+                addTestResult('ユーザー設定テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testToggleFunction() {
+            try {
+                if (!chrome?.storage?.local) {
+                    addTestResult('切り替え機能テスト', false, 'Storage API が利用できません');
+                    return;
+                }
+                
+                // 現在の設定を取得（userPreferences形式で）
+                chrome.storage.local.get(['userPreferences'])
+                    .then((result) => {
+                        const preferences = result.userPreferences || {};
+                        const currentState = preferences.extensionEnabled !== false;
+                        const newState = !currentState;
+                        
+                        // 設定を更新
+                        const updatedPreferences = { ...preferences, extensionEnabled: newState };
+                        
+                        return chrome.storage.local.set({ userPreferences: updatedPreferences })
+                            .then(() => {
+                                // 切り替え後の状態を確認
+                                return chrome.storage.local.get(['userPreferences']);
+                            })
+                            .then((newResult) => {
+                                const newPreferences = newResult.userPreferences || {};
+                                const actualNewState = newPreferences.extensionEnabled !== false;
+                                const success = actualNewState === newState;
+                                
+                                addTestResult(
+                                    '切り替え機能テスト',
+                                    success,
+                                    success ? 
+                                        `状態切り替えが成功しました (${currentState} → ${actualNewState})` : 
+                                        `状態切り替えに失敗しました`,
+                                    { 
+                                        originalState: currentState,
+                                        expectedState: newState,
+                                        actualState: actualNewState,
+                                        originalPreferences: preferences,
+                                        newPreferences: newPreferences
+                                    }
+                                );
+                                
+                                // 元の状態に戻す
+                                const restoredPreferences = { ...newPreferences, extensionEnabled: currentState };
+                                return chrome.storage.local.set({ userPreferences: restoredPreferences });
+                            });
+                    })
+                    .catch((error) => {
+                        addTestResult('切り替え機能テスト', false, '切り替え機能でエラーが発生しました', { error: error.message });
+                    });
+                    
+            } catch (error) {
+                addTestResult('切り替え機能テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testPopupInteraction() {
+            try {
+                if (!chrome?.runtime?.sendMessage) {
+                    addTestResult('ポップアップインタラクションテスト', false, 'Chrome Runtime API が利用できません');
+                    return;
+                }
+                
+                // ユーザーインタラクションメッセージを送信
+                chrome.runtime.sendMessage({
+                    type: 'user_interaction',
+                    interactionType: 'test_interaction',
+                    data: {
+                        timestamp: Date.now(),
+                        source: 'test_page',
+                        testData: 'popup_button_fix_test'
+                    }
+                })
+                .then((response) => {
+                    const success = response && (response.success !== false);
+                    
+                    addTestResult(
+                        'ポップアップインタラクションテスト',
+                        success,
+                        success ? 
+                            'ユーザーインタラクション通知が成功しました' : 
+                            'ユーザーインタラクション通知に失敗しました',
+                        { 
+                            response,
+                            messageType: 'user_interaction'
+                        }
+                    );
+                })
+                .catch((error) => {
+                    addTestResult('ポップアップインタラクションテスト', false, 'インタラクション通知でエラーが発生しました', { error: error.message });
+                });
+                    
+            } catch (error) {
+                addTestResult('ポップアップインタラクションテスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('全テスト開始', true, 'ポップアップボタンの全テストを実行します...');
+            
+            setTimeout(() => testChromeAPIs(), 100);
+            setTimeout(() => testStorageAPI(), 500);
+            setTimeout(() => testUserPreferences(), 1000);
+            setTimeout(() => testToggleFunction(), 1500);
+            setTimeout(() => testPopupInteraction(), 2000);
+            
+            setTimeout(() => {
+                const successCount = testResults.filter(r => r.success).length - 1; // -1 for start message
+                const totalCount = testResults.length - 1;
+                addTestResult(
+                    '全テスト完了',
+                    successCount === totalCount,
+                    `${successCount}/${totalCount} テストが成功しました`,
+                    { successRate: `${Math.round((successCount/totalCount) * 100)}%` }
+                );
+            }, 3000);
+        }
+
+        function clearResults() {
+            testResults = [];
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAPIStatus();
+            setInterval(updateAPIStatus, 2000); // 2秒ごとにステータス更新
+        });
+    </script>
+</body>
+</html>

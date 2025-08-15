@@ -1,0 +1,778 @@
+/* ポップアップ広告ブロッカー拡張機能 - ポップアップインターフェーススタイル */
+
+/* リセットとベーススタイル */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 320px;
+  min-height: 400px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #ffffff;
+  overflow-x: hidden;
+}
+
+#popup-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+/* ヘッダー */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 0;
+}
+
+.popup-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.extension-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-text {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+/* メインコントロール */
+.main-controls {
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.toggle-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle-label {
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+}
+
+/* トグルスイッチ */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s ease;
+  border-radius: 24px;
+  outline: none;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s ease;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked + .toggle-slider {
+  background-color: #667eea;
+}
+
+.toggle-input:checked + .toggle-slider:before {
+  transform: translateX(24px);
+}
+
+/* フォーカススタイル */
+.toggle-slider:focus,
+.toggle-input:focus + .toggle-slider {
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+}
+
+/* 統計セクション */
+.statistics-section {
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.stat-item:hover {
+  background-color: #e9ecef;
+}
+
+.stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* 現在のサイトセクション */
+.current-site-section {
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.site-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-domain {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #666;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.whitelist-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #667eea;
+  background-color: transparent;
+  border: 1px solid #667eea;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.whitelist-btn:hover {
+  background-color: #667eea;
+  color: white;
+}
+
+.whitelist-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+}
+
+.whitelist-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 最近のアクティビティセクション */
+.recent-activity-section {
+  padding: 16px;
+  flex: 1;
+}
+
+.activity-list {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-text {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 11px;
+  color: #999;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.activity-action {
+  font-weight: 500;
+  color: #333;
+}
+
+.activity-domain {
+  font-family: 'Courier New', monospace;
+  color: #667eea;
+}
+
+/* フッター */
+.popup-footer {
+  padding: 16px;
+  border-top: 1px solid #e5e5e5;
+  margin-top: auto;
+}
+
+.settings-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #667eea;
+  background-color: transparent;
+  border: 1px solid #667eea;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-btn:hover {
+  background-color: #667eea;
+  color: white;
+}
+
+.settings-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+}
+
+/* 無効状態のスタイル */
+.extension-disabled .popup-header {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
+.extension-disabled .stat-number {
+  color: #6c757d;
+}
+
+.extension-disabled .toggle-input:checked + .toggle-slider {
+  background-color: #6c757d;
+}
+
+/* スクロールバーのスタイル */
+.activity-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.activity-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.activity-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.activity-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* レスポンシブデザイン - 小さな画面 */
+@media (max-width: 300px) {
+  body {
+    width: 280px;
+  }
+  
+  .popup-header {
+    padding: 12px;
+  }
+  
+  .popup-title {
+    font-size: 14px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stat-item:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* レスポンシブデザイン - 大きな画面 */
+@media (min-width: 400px) {
+  body {
+    width: 380px;
+  }
+  
+  .stats-grid {
+    gap: 16px;
+  }
+  
+  .stat-item {
+    padding: 16px 12px;
+  }
+}
+
+/* ハイコントラストモード対応 */
+@media (prefers-contrast: high) {
+  .popup-header {
+    background: #000;
+    color: #fff;
+  }
+  
+  .toggle-input:checked + .toggle-slider {
+    background-color: #000;
+  }
+  
+  .stat-number {
+    color: #000;
+  }
+  
+  .whitelist-btn,
+  .settings-btn {
+    border-color: #000;
+    color: #000;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+  }
+  
+  .main-controls,
+  .statistics-section,
+  .current-site-section {
+    border-bottom-color: #333;
+  }
+  
+  .section-title {
+    color: #e0e0e0;
+  }
+  
+  .stat-item {
+    background-color: #2a2a2a;
+  }
+  
+  .stat-item:hover {
+    background-color: #333;
+  }
+  
+  .site-domain,
+  .activity-text {
+    color: #b0b0b0;
+  }
+  
+  .popup-footer {
+    border-top-color: #333;
+  }
+  
+  .activity-item {
+    border-bottom-color: #333;
+  }
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.activity-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 効果メトリクスセクション */
+.effectiveness-metrics {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.metrics-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 6px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.metric-item:hover {
+  background-color: #e9ecef;
+}
+
+.metric-number {
+  font-size: 16px;
+  font-weight: 700;
+  color: #28a745;
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: 10px;
+  color: #666;
+  margin-top: 3px;
+  text-align: center;
+}
+
+.trend-indicators {
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #667eea;
+}
+
+.trend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trend-label {
+  font-size: 11px;
+  color: #666;
+}
+
+.trend-value {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* データ可視化セクション */
+.data-visualization-section {
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.visualization-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chart-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.chart-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* ウェブサイト別チャート */
+.website-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chart-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-label {
+  font-size: 10px;
+  color: #666;
+  width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Courier New', monospace;
+}
+
+.bar-container {
+  flex: 1;
+  position: relative;
+  height: 16px;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+.bar-value {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* 時間別アクティビティチャート */
+.hourly-chart {
+  display: flex;
+  justify-content: center;
+}
+
+.hourly-bars {
+  display: flex;
+  align-items: end;
+  gap: 2px;
+  height: 60px;
+  padding: 0 4px;
+}
+
+.hour-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 10px;
+  height: 100%;
+  cursor: pointer;
+}
+
+.hour-fill {
+  width: 8px;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px 2px 0 0;
+  transition: all 0.2s ease;
+  margin-bottom: auto;
+}
+
+.hour-bar:hover .hour-fill {
+  opacity: 1 !important;
+  transform: scaleY(1.1);
+}
+
+.hour-label {
+  font-size: 7px;
+  color: #666;
+  margin-top: 2px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* チャート状態表示 */
+.chart-loading,
+.no-data,
+.chart-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+}
+
+.chart-error {
+  color: #dc3545;
+}
+
+.no-data {
+  color: #6c757d;
+}
+
+/* ダークモード対応 - データ可視化 */
+@media (prefers-color-scheme: dark) {
+  .effectiveness-metrics,
+  .trend-indicators {
+    border-color: #333;
+  }
+  
+  .metrics-title,
+  .chart-title {
+    color: #e0e0e0;
+  }
+  
+  .metric-item,
+  .chart-container,
+  .trend-indicators {
+    background-color: #2a2a2a;
+  }
+  
+  .metric-item:hover {
+    background-color: #333;
+  }
+  
+  .bar-container {
+    background-color: #333;
+  }
+  
+  .bar-label,
+  .hour-label,
+  .trend-label {
+    color: #b0b0b0;
+  }
+  
+  .bar-value {
+    color: #e0e0e0;
+  }
+  
+  .chart-loading,
+  .no-data {
+    color: #b0b0b0;
+  }
+  
+  .chart-error {
+    color: #ff6b6b;
+  }
+}
+
+/* レスポンシブ - データ可視化 */
+@media (max-width: 300px) {
+  .visualization-content {
+    gap: 12px;
+  }
+  
+  .chart-container {
+    padding: 10px;
+  }
+  
+  .bar-label {
+    width: 60px;
+  }
+  
+  .hourly-bars {
+    gap: 1px;
+  }
+  
+  .hour-bar {
+    width: 8px;
+  }
+  
+  .hour-fill {
+    width: 6px;
+  }
+}
+
+@media (min-width: 400px) {
+  .visualization-content {
+    gap: 20px;
+  }
+  
+  .chart-container {
+    padding: 16px;
+  }
+  
+  .bar-label {
+    width: 100px;
+  }
+  
+  .hourly-bars {
+    gap: 3px;
+    height: 80px;
+  }
+  
+  .hour-bar {
+    width: 12px;
+  }
+  
+  .hour-fill {
+    width: 10px;
+  }
+}
+
+/* アクセシビリティ - 動きを減らす設定 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .activity-item {
+    animation: none;
+  }
+  
+  .bar-fill,
+  .hour-fill {
+    transition: none;
+  }
+}

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>ポップアップ広告ブロッカー - 設定</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div id="options-container">
+    <header>
+      <h1>ポップアップ広告ブロッカー - 設定</h1>
+      <div class="status-indicator">
+        <span id="save-status" class="status-message"></span>
+      </div>
+    </header>
+
+    <!-- タブナビゲーション -->
+    <nav class="tab-navigation">
+      <button class="tab-button active" data-tab="general">一般設定</button>
+      <button class="tab-button" data-tab="blocking">ブロック設定</button>
+      <button class="tab-button" data-tab="whitelist">ホワイトリスト</button>
+      <button class="tab-button" data-tab="history">履歴</button>
+      <button class="tab-button" data-tab="advanced">高度な設定</button>
+      <button class="tab-button" data-tab="data">データ管理</button>
+    </nav>
+
+    <!-- 一般設定タブ -->
+    <div id="general-tab" class="tab-content active">
+      <h2>一般設定</h2>
+      
+      <div class="setting-group">
+        <h3>基本機能</h3>
+        <div class="setting-item">
+          <label class="toggle-label">
+            <input type="checkbox" id="extension-enabled" class="toggle-input">
+            <span class="toggle-slider"></span>
+            拡張機能を有効にする
+          </label>
+          <p class="setting-description">拡張機能全体のオン/オフを切り替えます</p>
+        </div>
+
+        <div class="setting-item">
+          <label class="toggle-label">
+            <input type="checkbox" id="show-notifications" class="toggle-input">
+            <span class="toggle-slider"></span>
+            通知を表示する
+          </label>
+          <p class="setting-description">ポップアップ検出時に通知を表示します</p>
+        </div>
+
+        <div class="setting-item">
+          <label for="notification-duration">通知表示時間</label>
+          <div class="input-group">
+            <input type="range" id="notification-duration" min="3" max="30" value="10" class="range-input">
+            <span id="notification-duration-value" class="range-value">10秒</span>
+          </div>
+          <p class="setting-description">通知が自動的に消えるまでの時間</p>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3>学習機能</h3>
+        <div class="setting-item">
+          <label class="toggle-label">
+            <input type="checkbox" id="learning-enabled" class="toggle-input">
+            <span class="toggle-slider"></span>
+            学習機能を有効にする
+          </label>
+          <p class="setting-description">ユーザーの決定を記憶して自動提案を改善します</p>
+        </div>
+
+        <div class="setting-item">
+          <label class="toggle-label">
+            <input type="checkbox" id="aggressive-mode" class="toggle-input">
+            <span class="toggle-slider"></span>
+            積極的モード
+          </label>
+          <p class="setting-description">より多くのポップアップを広告として判定します</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ブロック設定タブ -->
+    <div id="blocking-tab" class="tab-content">
+      <h2>ブロック設定</h2>
+      
+      <div class="setting-group">
+        <h3>検出設定</h3>
+        <div class="setting-item">
+          <label for="detection-sensitivity">検出感度</label>
+          <div class="input-group">
+            <input type="range" id="detection-sensitivity" min="1" max="5" value="3" class="range-input">
+            <span id="detection-sensitivity-value" class="range-value">標準</span>
+          </div>
+          <p class="setting-description">ポップアップ検出の感度を調整します</p>
+        </div>
+
+        <div class="setting-item">
+          <label for="confidence-threshold">信頼度しきい値</label>
+          <div class="input-group">
+            <input type="range" id="confidence-threshold" min="0.1" max="1.0" step="0.1" value="0.7" class="range-input">
+            <span id="confidence-threshold-value" class="range-value">70%</span>
+          </div>
+          <p class="setting-description">自動提案を行う最小信頼度</p>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3>ブロック対象</h3>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="block-modal-overlays" checked>
+            <span class="checkmark"></span>
+            モーダルオーバーレイ
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="block-popup-windows" checked>
+            <span class="checkmark"></span>
+            ポップアップウィンドウ
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="block-floating-ads" checked>
+            <span class="checkmark"></span>
+            フローティング広告
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="block-interstitial-ads">
+            <span class="checkmark"></span>
+            インタースティシャル広告
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ホワイトリストタブ -->
+    <div id="whitelist-tab" class="tab-content">
+      <h2>ホワイトリスト管理</h2>
+      
+      <div class="setting-group">
+        <h3>ドメインホワイトリスト</h3>
+        <div class="input-group">
+          <input type="text" id="domain-input" placeholder="example.com" class="text-input">
+          <button id="add-domain-btn" class="btn btn-primary">追加</button>
+        </div>
+        <div id="domain-list" class="list-container">
+          <!-- ドメインリストがここに動的に追加される -->
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3>パターンホワイトリスト</h3>
+        <div class="input-group">
+          <input type="text" id="pattern-input" placeholder="*.example.com/popup*" class="text-input">
+          <button id="add-pattern-btn" class="btn btn-primary">追加</button>
+        </div>
+        <div id="pattern-list" class="list-container">
+          <!-- パターンリストがここに動的に追加される -->
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3>一括操作</h3>
+        <div class="button-group">
+          <button id="import-whitelist-btn" class="btn btn-secondary">インポート</button>
+          <button id="export-whitelist-btn" class="btn btn-secondary">エクスポート</button>
+          <button id="clear-whitelist-btn" class="btn btn-danger">すべてクリア</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 履歴タブ -->
+    <div id="history-tab" class="tab-content">
+      <h2>決定履歴</h2>
+      
+      <div class="setting-group">
+        <h3>フィルター</h3>
+        <div class="filter-controls">
+          <select id="history-filter" class="select-input">
+            <option value="all">すべて</option>
+            <option value="closed">閉じた</option>
+            <option value="kept">保持した</option>
+            <option value="pending">保留中</option>
+          </select>
+          <input type="date" id="date-filter" class="date-input">
+          <button id="clear-filters-btn" class="btn btn-secondary">フィルタークリア</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3>履歴リスト</h3>
+        <div id="history-list" class="history-container">
+          <!-- 履歴アイテムがここに動的に追加される -->
+        </div>
+        <div class="pagination">
+          <button id="prev-page-btn" class="btn btn-secondary">前へ</button>
+          <span id="page-info">1 / 1</span>
+          <button id="next-page-btn" class="btn btn-secondary">次へ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 高度な設定タブ -->
+    <div id="advanced-tab" class="tab-content">
+      <h2>高度な設定</h2>
+      
+      <div class="setting-group">
+        <h3>パフォーマンス</h3>
+        <div class="setting-item">
+          <label for="max-history-items">履歴保存件数</label>
+          <div class="input-group">
+            <input type="number" id="max-history-items" min="100" max="10000" value="1000" class="number-input">
+            <span class="input-suffix">件</span>
+          </div>
+          <p class="setting-description">保存する履歴の最大件数</p>
+        </div>
+
+        <div class="setting-item">
+          <label for="cleanup-interval">自動クリーンアップ間隔</label>
+          <select id="cleanup-interval" class="select-input">
+            <option value="7">7日</option>
+            <option value="30" selected>30日</option>
+            <option value="90">90日</option>
+            <option value="365">1年</option>
+            <option value="0">無効</option>
+          </select>
+          <p class="setting-description">古いデータの自動削除間隔</p>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3>デバッグ</h3>
+        <div class="setting-item">
+          <label class="toggle-label">
+            <input type="checkbox" id="debug-mode" class="toggle-input">
+            <span class="toggle-slider"></span>
+            デバッグモード
+          </label>
+          <p class="setting-description">詳細なログを出力します（開発者向け）</p>
+        </div>
+
+        <div class="setting-item">
+          <label class="toggle-label">
+            <input type="checkbox" id="console-logging" class="toggle-input">
+            <span class="toggle-slider"></span>
+            コンソールログ
+          </label>
+          <p class="setting-description">ブラウザコンソールにログを出力します</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- データ管理タブ -->
+    <div id="data-tab" class="tab-content">
+      <h2>データ管理</h2>
+      
+      <div class="setting-group">
+        <h3>統計情報</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-value" id="total-detected">0</span>
+            <span class="stat-label">検出総数</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="total-blocked">0</span>
+            <span class="stat-label">ブロック総数</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="total-kept">0</span>
+            <span class="stat-label">保持総数</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="whitelist-count">0</span>
+            <span class="stat-label">ホワイトリスト数</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3>データのエクスポート/インポート</h3>
+        <div class="button-group">
+          <button id="export-settings-btn" class="btn btn-primary">設定をエクスポート</button>
+          <button id="import-settings-btn" class="btn btn-primary">設定をインポート</button>
+          <input type="file" id="import-file-input" accept=".json" style="display: none;">
+        </div>
+        <p class="setting-description">設定とデータをバックアップまたは復元します</p>
+      </div>
+
+      <div class="setting-group">
+        <h3>データリセット</h3>
+        <div class="button-group">
+          <button id="reset-settings-btn" class="btn btn-warning">設定をリセット</button>
+          <button id="reset-history-btn" class="btn btn-warning">履歴をリセット</button>
+          <button id="reset-all-btn" class="btn btn-danger">すべてリセット</button>
+        </div>
+        <p class="setting-description warning">この操作は元に戻せません</p>
+      </div>
+    </div>
+
+    <!-- 保存ボタン -->
+    <div class="footer-actions">
+      <button id="save-btn" class="btn btn-primary btn-large">設定を保存</button>
+      <button id="reset-btn" class="btn btn-secondary">変更を破棄</button>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

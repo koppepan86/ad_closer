@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Functionality Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            margin: 10px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .test-btn:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        .mock-ad {
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 10px auto;
+        }
+        
+        #gallery-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            background: #fafafa;
+            margin: 20px 0;
+        }
+        
+        #log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Modal Functionality Test</h1>
+        
+        <div class="mock-ad" id="test-ad">Test Advertisement</div>
+        
+        <button class="test-btn" onclick="testModal()">Test Modal</button>
+        <button class="test-btn" onclick="testModalWithScreenshot()">Test Modal with Screenshot</button>
+        <button class="test-btn" onclick="clearTest()">Clear</button>
+        
+        <div id="gallery-container"></div>
+        
+        <div id="log">Ready for testing...</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="content/preview-gallery.js"></script>
+
+    <script>
+        let previewGallery = null;
+        
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearTest() {
+            if (previewGallery) {
+                previewGallery.cleanup();
+                previewGallery = null;
+            }
+            document.getElementById('gallery-container').innerHTML = '';
+            document.getElementById('log').textContent = 'Cleared.\n';
+        }
+        
+        function testModal() {
+            try {
+                log('Testing basic modal functionality...');
+                
+                clearTest();
+                
+                const testAd = document.getElementById('test-ad');
+                const rect = testAd.getBoundingClientRect();
+                
+                const mockData = [{
+                    id: 'test_preview_1',
+                    element: testAd,
+                    screenshot: null,
+                    elementInfo: {
+                        tagName: testAd.tagName,
+                        className: testAd.className,
+                        id: testAd.id,
+                        position: { x: rect.left, y: rect.top },
+                        size: { width: rect.width, height: rect.height },
+                        zIndex: 'auto',
+                        type: 'テスト広告'
+                    },
+                    fallback: {
+                        reason: 'test',
+                        description: 'This is a test fallback'
+                    }
+                }];
+                
+                previewGallery = new PreviewGallery({
+                    debugMode: true,
+                    showElementInfo: true,
+                    enableIndividualSelection: true,
+                    enableExpandedView: true,
+                    onExpandedView: (previewData) => {
+                        log(`Modal opened for: ${previewData.id}`);
+                    }
+                });
+                
+                const container = document.getElementById('gallery-container');
+                previewGallery.renderPreviews(mockData, container);
+                
+                log('Gallery rendered. Click on the preview to test modal.');
+                
+                // Automatically open modal after 1 second
+                setTimeout(() => {
+                    previewGallery.showExpandedView('test_preview_1');
+                    log('Modal opened programmatically');
+                }, 1000);
+                
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        }
+        
+        async function testModalWithScreenshot() {
+            try {
+                log('Testing modal with screenshot...');
+                
+                clearTest();
+                
+                const testAd = document.getElementById('test-ad');
+                const rect = testAd.getBoundingClientRect();
+                
+                // Capture screenshot
+                const canvas = await html2canvas(testAd, {
+                    width: rect.width,
+                    height: rect.height,
+                    scale: 1
+                });
+                
+                // Create thumbnail
+                const thumbnailCanvas = document.createElement('canvas');
+                const thumbnailCtx = thumbnailCanvas.getContext('2d');
+                thumbnailCanvas.width = 150;
+                thumbnailCanvas.height = 100;
+                thumbnailCtx.drawImage(canvas, 0, 0, 150, 100);
+                
+                // Create full size
+                const fullSizeCanvas = document.createElement('canvas');
+                const fullSizeCtx = fullSizeCanvas.getContext('2d');
+                fullSizeCanvas.width = 400;
+                fullSizeCanvas.height = 300;
+                fullSizeCtx.drawImage(canvas, 0, 0, 400, 300);
+                
+                const mockData = [{
+                    id: 'test_preview_2',
+                    element: testAd,
+                    screenshot: {
+                        thumbnail: thumbnailCanvas.toDataURL('image/png', 0.8),
+                        fullSize: fullSizeCanvas.toDataURL('image/png', 0.8),
+                        width: canvas.width,
+                        height: canvas.height,
+                        format: 'png'
+                    },
+                    elementInfo: {
+                        tagName: testAd.tagName,
+                        className: testAd.className,
+                        id: testAd.id,
+                        position: { x: rect.left, y: rect.top },
+                        size: { width: rect.width, height: rect.height },
+                        zIndex: 'auto',
+                        type: 'テスト広告（スクリーンショット付き）'
+                    }
+                }];
+                
+                previewGallery = new PreviewGallery({
+                    debugMode: true,
+                    showElementInfo: true,
+                    enableIndividualSelection: true,
+                    enableExpandedView: true,
+                    onExpandedView: (previewData) => {
+                        log(`Modal with screenshot opened for: ${previewData.id}`);
+                    }
+                });
+                
+                const container = document.getElementById('gallery-container');
+                previewGallery.renderPreviews(mockData, container);
+                
+                log('Gallery with screenshot rendered. Click on the preview to test modal.');
+                
+                // Automatically open modal after 1 second
+                setTimeout(() => {
+                    previewGallery.showExpandedView('test_preview_2');
+                    log('Modal with screenshot opened programmatically');
+                }, 1000);
+                
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Modal test page loaded');
+        });
+    </script>
+</body>
+</html>

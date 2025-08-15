@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PopupDetector Timeout Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: #0056b3;
+        }
+        
+        .status-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>PopupDetector Timeout Fix Test</h1>
+        <p>PopupDetectorGuardのタイムアウト問題の修正をテストします。</p>
+        
+        <div class="status-display">
+            <h3>PopupDetector Status:</h3>
+            <div id="status-display"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="button" onclick="testPopupDetectorAvailability()">PopupDetector可用性テスト</button>
+            <button class="button" onclick="testGuardFunctionality()">Guard機能テスト</button>
+            <button class="button" onclick="testFallbackMode()">フォールバックモードテスト</button>
+            <button class="button" onclick="testProxyFunctionality()">プロキシ機能テスト</button>
+            <button class="button" onclick="simulateTimeout()">タイムアウトシミュレーション</button>
+            <button class="button" onclick="runAllTests()">全テスト実行</button>
+            <button class="button" onclick="clearResults()">結果クリア</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function addTestResult(testName, success, message, details = null) {
+            const result = {
+                testName,
+                success,
+                message,
+                details,
+                timestamp: new Date().toISOString()
+            };
+            
+            testResults.push(result);
+            displayTestResult(result);
+        }
+
+        function displayTestResult(result) {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${result.success ? 'success' : 'error'}`;
+            
+            let content = `[${result.timestamp}] ${result.testName}: ${result.message}`;
+            if (result.details) {
+                content += '\\n詳細: ' + JSON.stringify(result.details, null, 2);
+            }
+            
+            resultDiv.textContent = content;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function updateStatusDisplay() {
+            const statusDiv = document.getElementById('status-display');
+            
+            const status = {
+                timestamp: new Date().toISOString(),
+                popupDetectorExists: typeof window.popupDetector !== 'undefined',
+                popupDetectorType: typeof window.popupDetector,
+                popupDetectorGuardExists: typeof window.PopupDetectorGuard !== 'undefined',
+                isPopupDetectorReady: typeof window.isPopupDetectorReady === 'function' ? window.isPopupDetectorReady() : 'function not available',
+                waitForPopupDetector: typeof window.waitForPopupDetector === 'function',
+                popupDetectorClass: typeof PopupDetector !== 'undefined' ? 'available' : 'not available'
+            };
+            
+            if (window.popupDetector) {
+                status.popupDetectorDetails = {
+                    hasDetectPopups: typeof window.popupDetector.detectPopups === 'function',
+                    hasHandleMutations: typeof window.popupDetector.handleMutations === 'function',
+                    isRealInstance: !!window.popupDetector._realInstance,
+                    isFallbackMode: !!window.popupDetector._fallbackMode
+                };
+            }
+            
+            statusDiv.textContent = JSON.stringify(status, null, 2);
+        }
+
+        function testPopupDetectorAvailability() {
+            try {
+                const popupDetectorExists = typeof window.popupDetector !== 'undefined';
+                const popupDetectorClassExists = typeof PopupDetector !== 'undefined';
+                const guardExists = typeof window.PopupDetectorGuard !== 'undefined';
+                
+                const success = popupDetectorExists || popupDetectorClassExists || guardExists;
+                
+                addTestResult(
+                    'PopupDetector可用性テスト',
+                    success,
+                    success ? 'PopupDetector関連のオブジェクトが利用可能です' : 'PopupDetector関連のオブジェクトが見つかりません',
+                    { 
+                        popupDetectorExists,
+                        popupDetectorClassExists,
+                        guardExists,
+                        popupDetectorType: typeof window.popupDetector
+                    }
+                );
+            } catch (error) {
+                addTestResult('PopupDetector可用性テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testGuardFunctionality() {
+            try {
+                if (!window.PopupDetectorGuard) {
+                    addTestResult('Guard機能テスト', false, 'PopupDetectorGuardが利用できません');
+                    return;
+                }
+                
+                const guard = window.PopupDetectorGuard;
+                const hasRequiredMethods = [
+                    'safeHandleMutations',
+                    'safeDetectPopups',
+                    'waitForPopupDetector',
+                    'isReady',
+                    'getStatus'
+                ].every(method => typeof guard[method] === 'function');
+                
+                let statusInfo = null;
+                try {
+                    statusInfo = guard.getStatus();
+                } catch (statusError) {
+                    console.warn('Status取得エラー:', statusError);
+                }
+                
+                addTestResult(
+                    'Guard機能テスト',
+                    hasRequiredMethods,
+                    hasRequiredMethods ? 'PopupDetectorGuardの必要なメソッドが利用可能です' : '必要なメソッドが不足しています',
+                    { 
+                        hasRequiredMethods,
+                        statusInfo,
+                        availableMethods: Object.keys(guard).filter(key => typeof guard[key] === 'function')
+                    }
+                );
+            } catch (error) {
+                addTestResult('Guard機能テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testFallbackMode() {
+            try {
+                if (!window.popupDetector) {
+                    addTestResult('フォールバックモードテスト', false, 'popupDetectorが利用できません');
+                    return;
+                }
+                
+                // detectPopupsメソッドのテスト
+                let detectResult = null;
+                try {
+                    detectResult = window.popupDetector.detectPopups();
+                } catch (detectError) {
+                    console.warn('detectPopups呼び出しエラー:', detectError);
+                }
+                
+                // handleMutationsメソッドのテスト
+                let mutationResult = null;
+                try {
+                    mutationResult = window.popupDetector.handleMutations([]);
+                } catch (mutationError) {
+                    console.warn('handleMutations呼び出しエラー:', mutationError);
+                }
+                
+                const success = Array.isArray(detectResult);
+                
+                addTestResult(
+                    'フォールバックモードテスト',
+                    success,
+                    success ? 'フォールバックモードが正常に動作しています' : 'フォールバックモードに問題があります',
+                    { 
+                        detectResult,
+                        mutationResult,
+                        isRealInstance: !!window.popupDetector._realInstance,
+                        isFallbackMode: !!window.popupDetector._fallbackMode
+                    }
+                );
+            } catch (error) {
+                addTestResult('フォールバックモードテスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function testProxyFunctionality() {
+            try {
+                if (!window.popupDetector) {
+                    addTestResult('プロキシ機能テスト', false, 'popupDetectorが利用できません');
+                    return;
+                }
+                
+                const isProxy = typeof window.popupDetector === 'object' && 
+                               (window.popupDetector._realInstance !== undefined || 
+                                window.popupDetector._fallbackMode !== undefined);
+                
+                const hasRequiredMethods = typeof window.popupDetector.detectPopups === 'function' &&
+                                         typeof window.popupDetector.handleMutations === 'function';
+                
+                // プロキシの動作テスト
+                let proxyWorking = false;
+                try {
+                    const testResult = window.popupDetector.detectPopups();
+                    proxyWorking = Array.isArray(testResult);
+                } catch (proxyError) {
+                    console.warn('プロキシ動作テスト失敗:', proxyError);
+                }
+                
+                const success = isProxy && hasRequiredMethods && proxyWorking;
+                
+                addTestResult(
+                    'プロキシ機能テスト',
+                    success,
+                    success ? 'プロキシが正常に動作しています' : 'プロキシに問題があります',
+                    { 
+                        isProxy,
+                        hasRequiredMethods,
+                        proxyWorking,
+                        realInstance: !!window.popupDetector._realInstance,
+                        fallbackMode: !!window.popupDetector._fallbackMode
+                    }
+                );
+            } catch (error) {
+                addTestResult('プロキシ機能テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function simulateTimeout() {
+            try {
+                addTestResult('タイムアウトシミュレーション', true, 'タイムアウトシミュレーションを開始します...');
+                
+                // PopupDetectorクラスを一時的に隠す
+                const originalPopupDetector = window.PopupDetector;
+                delete window.PopupDetector;
+                
+                // 新しいGuardインスタンスでテスト
+                if (window.resetPopupDetectorGuard) {
+                    window.resetPopupDetectorGuard();
+                }
+                
+                // 5秒後にクラスを復元
+                setTimeout(() => {
+                    window.PopupDetector = originalPopupDetector;
+                    addTestResult('タイムアウトシミュレーション', true, 'PopupDetectorクラスを復元しました');
+                }, 5000);
+                
+                addTestResult('タイムアウトシミュレーション', true, 'シミュレーション設定完了（5秒後にクラス復元）');
+                
+            } catch (error) {
+                addTestResult('タイムアウトシミュレーション', false, 'シミュレーション実行エラー', { error: error.message });
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('全テスト開始', true, 'PopupDetectorタイムアウト修正の全テストを実行します...');
+            
+            setTimeout(() => testPopupDetectorAvailability(), 100);
+            setTimeout(() => testGuardFunctionality(), 500);
+            setTimeout(() => testFallbackMode(), 1000);
+            setTimeout(() => testProxyFunctionality(), 1500);
+            
+            setTimeout(() => {
+                const successCount = testResults.filter(r => r.success).length - 1; // -1 for start message
+                const totalCount = testResults.length - 1;
+                addTestResult(
+                    '全テスト完了',
+                    successCount === totalCount,
+                    `${successCount}/${totalCount} テストが成功しました`,
+                    { successRate: `${Math.round((successCount/totalCount) * 100)}%` }
+                );
+            }, 2500);
+        }
+
+        function clearResults() {
+            testResults = [];
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatusDisplay();
+            setInterval(updateStatusDisplay, 2000); // 2秒ごとにステータス更新
+            
+            // PopupDetectorGuard準備完了イベントをリッスン
+            document.addEventListener('popupDetectorGuardReady', function(event) {
+                addTestResult(
+                    'PopupDetectorGuard準備完了',
+                    true,
+                    'PopupDetectorGuardが準備完了しました',
+                    event.detail
+                );
+            });
+        });
+    </script>
+</body>
+</html>

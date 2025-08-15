@@ -1,0 +1,142 @@
+{
+  "summary": {
+    "total": 4,
+    "passed": 0,
+    "failed": 4,
+    "skipped": 0,
+    "suites": [
+      {
+        "name": "コンポーネント通信テスト",
+        "filename": "component-communication.test.js",
+        "tests": [],
+        "passed": 0,
+        "failed": 1,
+        "duration": 684,
+        "memoryUsage": {
+          "rss": 36,
+          "heapUsed": 4,
+          "heapTotal": 5,
+          "external": 1
+        }
+      },
+      {
+        "name": "拡張機能ライフサイクルテスト",
+        "filename": "extension-lifecycle.test.js",
+        "tests": [],
+        "passed": 0,
+        "failed": 1,
+        "duration": 588,
+        "memoryUsage": {
+          "rss": 36,
+          "heapUsed": 5,
+          "heapTotal": 6,
+          "external": 2
+        }
+      },
+      {
+        "name": "クロスウェブサイト機能テスト",
+        "filename": "cross-website-functionality.test.js",
+        "tests": [],
+        "passed": 0,
+        "failed": 1,
+        "duration": 561,
+        "memoryUsage": {
+          "rss": 36,
+          "heapUsed": 5,
+          "heapTotal": 6,
+          "external": 2
+        }
+      },
+      {
+        "name": "パフォーマンス・メモリテスト",
+        "filename": "performance-memory.test.js",
+        "tests": [],
+        "passed": 0,
+        "failed": 1,
+        "duration": 558,
+        "memoryUsage": {
+          "rss": 37,
+          "heapUsed": 5,
+          "heapTotal": 6,
+          "external": 2
+        }
+      }
+    ],
+    "startTime": 1753680073099,
+    "endTime": 1753680075491,
+    "duration": 2392
+  },
+  "performance": {
+    "memoryUsage": [
+      {
+        "suite": "コンポーネント通信テスト",
+        "memory": {
+          "rss": 36,
+          "heapUsed": 4,
+          "heapTotal": 5,
+          "external": 1
+        },
+        "timestamp": 1753680073783
+      },
+      {
+        "suite": "拡張機能ライフサイクルテスト",
+        "memory": {
+          "rss": 36,
+          "heapUsed": 5,
+          "heapTotal": 6,
+          "external": 2
+        },
+        "timestamp": 1753680074371
+      },
+      {
+        "suite": "クロスウェブサイト機能テスト",
+        "memory": {
+          "rss": 36,
+          "heapUsed": 5,
+          "heapTotal": 6,
+          "external": 2
+        },
+        "timestamp": 1753680074933
+      },
+      {
+        "suite": "パフォーマンス・メモリテスト",
+        "memory": {
+          "rss": 37,
+          "heapUsed": 5,
+          "heapTotal": 6,
+          "external": 2
+        },
+        "timestamp": 1753680075491
+      }
+    ],
+    "executionTimes": [
+      {
+        "suite": "コンポーネント通信テスト",
+        "duration": 684,
+        "testsCount": 1
+      },
+      {
+        "suite": "拡張機能ライフサイクルテスト",
+        "duration": 588,
+        "testsCount": 1
+      },
+      {
+        "suite": "クロスウェブサイト機能テスト",
+        "duration": 561,
+        "testsCount": 1
+      },
+      {
+        "suite": "パフォーマンス・メモリテスト",
+        "duration": 558,
+        "testsCount": 1
+      }
+    ],
+    "resourceUsage": []
+  },
+  "timestamp": "2025-07-28T05:21:15.492Z",
+  "environment": {
+    "nodeVersion": "v22.17.1",
+    "platform": "win32",
+    "arch": "x64"
+  }
+}

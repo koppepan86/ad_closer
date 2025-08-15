@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>ポップアップテスト</title>
+  <link rel="stylesheet" href="popup.css">
+  <style>
+    /* テスト用のスタイル */
+    body {
+      margin: 20px;
+      background: #f0f0f0;
+    }
+    
+    .test-container {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <div id="popup-container">
+      <!-- ヘッダー -->
+      <header class="popup-header">
+        <h1 class="popup-title">ポップアップ広告ブロッカー</h1>
+        <div class="extension-status" id="extension-status">
+          <span class="status-text" id="status-text">有効</span>
+        </div>
+      </header>
+
+      <!-- メイン切り替えコントロール -->
+      <section class="main-controls">
+        <div class="toggle-container">
+          <label class="toggle-label" for="extension-toggle">
+            拡張機能を有効にする
+          </label>
+          <div class="toggle-switch">
+            <input type="checkbox" id="extension-toggle" class="toggle-input" checked>
+            <span class="toggle-slider" role="switch" aria-checked="true" tabindex="0"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 統計表示 -->
+      <section class="statistics-section">
+        <h2 class="section-title">統計</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-number" id="total-blocked">42</span>
+            <span class="stat-label">ブロック済み</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="today-blocked">3</span>
+            <span class="stat-label">今日</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="current-site-blocked">1</span>
+            <span class="stat-label">このサイト</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 現在のサイト管理 -->
+      <section class="current-site-section">
+        <h2 class="section-title">現在のサイト</h2>
+        <div class="site-info">
+          <span class="site-domain" id="current-domain">example.com</span>
+          <button class="whitelist-btn" id="whitelist-btn" type="button">
+            ホワイトリストに追加
+          </button>
+        </div>
+      </section>
+
+      <!-- 最近のアクティビティ -->
+      <section class="recent-activity-section">
+        <h2 class="section-title">最近のアクティビティ</h2>
+        <div class="activity-list" id="activity-list">
+          <div class="activity-item">
+            <span class="activity-text">
+              <span class="activity-action">ブロック</span>
+              <span class="activity-domain">example.com</span>
+            </span>
+            <span class="activity-time">2分前</span>
+          </div>
+          <div class="activity-item">
+            <span class="activity-text">
+              <span class="activity-action">許可</span>
+              <span class="activity-domain">trusted-site.com</span>
+            </span>
+            <span class="activity-time">5分前</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- フッター -->
+      <footer class="popup-footer">
+        <button class="settings-btn" id="settings-btn" type="button">
+          詳細設定
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // 簡単なテスト用JavaScript
+    document.getElementById('extension-toggle').addEventListener('change', function(e) {
+      const container = document.getElementById('popup-container');
+      const statusText = document.getElementById('status-text');
+      
+      if (e.target.checked) {
+        container.classList.remove('extension-disabled');
+        statusText.textContent = '有効';
+      } else {
+        container.classList.add('extension-disabled');
+        statusText.textContent = '無効';
+      }
+    });
+    
+    document.getElementById('whitelist-btn').addEventListener('click', function() {
+      this.textContent = this.textContent === 'ホワイトリストに追加' ? 
+        'ホワイトリストから削除' : 'ホワイトリストに追加';
+    });
+  </script>
+</body>
+</html>

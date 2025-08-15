@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タスク7: 個別選択機能実装テスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-button.success {
+            background: #28a745;
+        }
+        .test-button.error {
+            background: #dc3545;
+        }
+        .mock-ad {
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 10px;
+            border-radius: 8px;
+            position: relative;
+        }
+        .mock-ad.banner {
+            width: 728px;
+            height: 90px;
+            background: linear-gradient(45deg, #ffa726, #ff7043);
+        }
+        .mock-ad.popup {
+            width: 400px;
+            height: 300px;
+            background: linear-gradient(45deg, #ab47bc, #7b1fa2);
+        }
+        .mock-ad.small {
+            width: 200px;
+            height: 150px;
+            background: linear-gradient(45deg, #26c6da, #00acc1);
+        }
+        .test-results {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .test-result-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .test-result-item:last-child {
+            border-bottom: none;
+        }
+        .result-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+        }
+        .result-icon.success { background: #28a745; }
+        .result-icon.error { background: #dc3545; }
+        .result-icon.info { background: #17a2b8; }
+        .result-icon.warning { background: #ffc107; color: #333; }
+        .component-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .status-item {
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .status-item.available {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-item.unavailable {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .task-requirements {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .requirement-item {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .requirement-item::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>タスク7: 個別選択機能実装テスト</h1>
+        
+        <div class="task-requirements">
+            <h3>タスク要件</h3>
+            <div class="requirement-item">各プレビューに対する個別のブロック/許可ボタンを追加</div>
+            <div class="requirement-item">個別選択状態の管理機能を実装</div>
+            <div class="requirement-item">選択状態の視覚的フィードバック機能を実装</div>
+            <div class="requirement-item">個別選択結果の処理機能を実装</div>
+        </div>
+
+        <div class="test-section">
+            <h2>コンポーネント状態</h2>
+            <div id="component-status" class="component-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>テスト用広告要素</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <div class="mock-ad" id="ad1">オーバーレイ広告 #1</div>
+                <div class="mock-ad banner" id="ad2">バナー広告 #2</div>
+                <div class="mock-ad popup" id="ad3">ポップアップ広告 #3</div>
+                <div class="mock-ad small" id="ad4">小型広告 #4</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>個別選択機能テスト</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <button class="test-button" onclick="testIndividualButtons()">1. 個別ボタン表示</button>
+                <button class="test-button" onclick="testSelectionState()">2. 選択状態管理</button>
+                <button class="test-button" onclick="testVisualFeedback()">3. 視覚的フィードバック</button>
+                <button class="test-button" onclick="testResultProcessing()">4. 結果処理</button>
+                <button class="test-button" onclick="testBulkOperations()">5. 一括操作</button>
+                <button class="test-button" onclick="testExpandedModal()">6. 拡大表示での選択</button>
+                <button class="test-button" onclick="testSelectionStats()">7. 選択統計</button>
+                <button class="test-button" onclick="runAllTests()">全テスト実行</button>
+                <button class="test-button" onclick="clearResults()">結果クリア</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>テスト結果</h2>
+            <div id="test-results" class="test-results"></div>
+        </div>
+    </div>
+
+    <!-- 必要なライブラリを読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- コンポーネントを読み込み -->
+    <script src="content/ad-preview-capture.js"></script>
+    <script src="content/preview-gallery.js"></script>
+    <script src="content/user-choice-dialog.js"></script>
+
+    <script>
+        let testResults = [];
+        let testCount = 0;
+        let passedTests = 0;
+
+        // テスト結果を追加
+        function addTestResult(message, type = 'info', details = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            testResults.push({
+                message,
+                type,
+                timestamp,
+                details
+            });
+            
+            if (type === 'success') passedTests++;
+            testCount++;
+            
+            updateTestResults();
+        }
+
+        // テスト結果を表示
+        function updateTestResults() {
+            const container = document.getElementById('test-results');
+            container.innerHTML = testResults.map(result => {
+                const icon = result.type === 'success' ? '✓' : 
+                           result.type === 'error' ? '✗' : 
+                           result.type === 'warning' ? '⚠' : 'ℹ';
+                
+                return `<div class="test-result-item">
+                    <div class="result-icon ${result.type}">${icon}</div>
+                    <div>
+                        <strong>[${result.timestamp}]</strong> ${result.message}
+                        ${result.details ? `<br><small style="color: #666;">${result.details}</small>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+            
+            // 進捗を更新
+            updateProgress();
+        }
+
+        // 進捗を更新
+        function updateProgress() {
+            const progressText = `テスト進捗: ${passedTests}/${testCount} 成功`;
+            document.title = `${progressText} - タスク7テスト`;
+        }
+
+        // 結果をクリア
+        function clearResults() {
+            testResults = [];
+            testCount = 0;
+            passedTests = 0;
+            updateTestResults();
+        }
+
+        // コンポーネント状態を表示
+        function updateComponentStatus() {
+            const components = [
+                { name: 'html2canvas', available: typeof html2canvas !== 'undefined' },
+                { name: 'AdPreviewCapture', available: typeof AdPreviewCapture !== 'undefined' },
+                { name: 'PreviewGallery', available: typeof PreviewGallery !== 'undefined' },
+                { name: 'UserChoiceDialog', available: typeof UserChoiceDialog !== 'undefined' },
+                { name: 'Global Instance', available: typeof window.userChoiceDialog !== 'undefined' }
+            ];
+
+            const container = document.getElementById('component-status');
+            container.innerHTML = components.map(comp => 
+                `<div class="status-item ${comp.available ? 'available' : 'unavailable'}">
+                    ${comp.name}<br>
+                    ${comp.available ? '✅ 利用可能' : '❌ 未読み込み'}
+                </div>`
+            ).join('');
+        }
+
+        // 1. 個別ボタン表示テスト
+        async function testIndividualButtons() {
+            addTestResult('個別ボタン表示テストを開始...', 'info');
+            
+            try {
+                const mockAds = [
+                    { element: document.getElementById('ad1'), type: 'overlay', id: 'test-ad-1' },
+                    { element: document.getElementById('ad2'), type: 'banner', id: 'test-ad-2' }
+                ];
+
+                const dialogPromise = window.userChoiceDialog.showChoiceDialog(mockAds);
+                
+                // ボタンの存在を確認
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        const allowButtons = document.querySelectorAll('.preview-action-btn.allow');
+                        const blockButtons = document.querySelectorAll('.preview-action-btn.block');
+                        
+                        if (allowButtons.length >= 2 && blockButtons.length >= 2) {
+                            addTestResult('✓ 個別ボタンが正常に表示されました', 'success', 
+                                `許可ボタン: ${allowButtons.length}個, ブロックボタン: ${blockButtons.length}個`);
+                        } else {
+                            addTestResult('✗ 個別ボタンの表示に問題があります', 'error',
+                                `許可ボタン: ${allowButtons.length}個, ブロックボタン: ${blockButtons.length}個`);
+                        }
+                        resolve();
+                    }, 2000);
+                });
+
+                // ダイアログを閉じる
+                const closeBtn = document.querySelector('.ad-choice-close');
+                if (closeBtn) closeBtn.click();
+                
+            } catch (error) {
+                addTestResult('✗ 個別ボタン表示テストでエラーが発生', 'error', error.message);
+            }
+        }
+
+        // 2. 選択状態管理テスト
+        async function testSelectionState() {
+            addTestResult('選択状態管理テストを開始...', 'info');
+            
+            try {
+                const previewGallery = new PreviewGallery({
+                    enableIndividualSelection: true,
+                    debugMode: true
+                });
+
+                const mockPreviewData = [
+                    { id: 'test-1', elementInfo: { type: 'overlay', size: { width: 300, height: 200 } } },
+                    { id: 'test-2', elementInfo: { type: 'banner', size: { width: 728, height: 90 } } }
+                ];
+
+                const testContainer = document.createElement('div');
+                testContainer.style.cssText = 'position:fixed;top:10px;left:10px;z-index:999999;background:white;padding:10px;border:2px solid #007bff;border-radius:5px;';
+                document.body.appendChild(testContainer);
+
+                await previewGallery.renderPreviews(mockPreviewData, testContainer);
+
+                // 選択状態をテスト
+                previewGallery.handleIndividualSelection('test-1', 'allow');
+                previewGallery.handleIndividualSelection('test-2', 'block');
+
+                const state1 = previewGallery.getPreviewState('test-1');
+                const state2 = previewGallery.getPreviewState('test-2');
+
+                if (state1 === 'allow' && state2 === 'block') {
+                    addTestResult('✓ 選択状態管理が正常に動作', 'success', 
+                        `test-1: ${state1}, test-2: ${state2}`);
+                } else {
+                    addTestResult('✗ 選択状態管理に問題があります', 'error',
+                        `test-1: ${state1}, test-2: ${state2}`);
+                }
+
+                // クリーンアップ
+                setTimeout(() => {
+                    if (testContainer.parentNode) {
+                        testContainer.parentNode.removeChild(testContainer);
+                    }
+                    previewGallery.cleanup();
+                }, 3000);
+                
+            } catch (error) {
+                addTestResult('✗ 選択状態管理テストでエラーが発生', 'error', error.message);
+            }
+        }
+
+        // 3. 視覚的フィードバックテスト
+        async function testVisualFeedback() {
+            addTestResult('視覚的フィードバックテストを開始...', 'info');
+            
+            try {
+                const mockAds = [
+                    { element: document.getElementById('ad1'), type: 'overlay', id: 'test-ad-1' },
+                    { element: document.getElementById('ad2'), type: 'banner', id: 'test-ad-2' }
+                ];
+
+                const dialogPromise = window.userChoiceDialog.showChoiceDialog(mockAds);
+                
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        const allowButton = document.querySelector('.preview-action-btn.allow');
+                        if (allowButton) {
+                            allowButton.click();
+                            
+                            setTimeout(() => {
+                                const selectedItem = document.querySelector('.preview-item.selected');
+                                const selectionIndicator = document.querySelector('.selection-indicator');
+                                
+                                if (selectedItem && selectionIndicator) {
+                                    addTestResult('✓ 視覚的フィードバックが正常に表示', 'success',
+                                        '選択状態のCSSクラスと選択インジケーターを確認');
+                                } else {
+                                    addTestResult('✗ 視覚的フィードバックに問題があります', 'error',
+                                        `選択アイテム: ${!!selectedItem}, インジケーター: ${!!selectionIndicator}`);
+                                }
+                                resolve();
+                            }, 500);
+                        } else {
+                            addTestResult('✗ 許可ボタンが見つかりません', 'error');
+                            resolve();
+                        }
+                    }, 2000);
+                });
+
+                // ダイアログを閉じる
+                const closeBtn = document.querySelector('.ad-choice-close');
+                if (closeBtn) closeBtn.click();
+                
+            } catch (error) {
+                addTestResult('✗ 視覚的フィードバックテストでエラーが発生', 'error', error.message);
+            }
+        }
+
+        // 4. 結果処理テスト
+        async function testResultProcessing() {
+            addTestResult('結果処理テストを開始...', 'info');
+            
+            try {
+                const mockAds = [
+                    { element: document.getElementById('ad1'), type: 'overlay', id: 'test-ad-1' },
+                    { element: document.getElementById('ad2'), type: 'banner', id: 'test-ad-2' }
+                ];
+
+                const dialogPromise = window.userChoiceDialog.showChoiceDialog(mockAds);
+                
+                // 個別選択を実行
+                setTimeout(() => {
+                    const buttons = document.querySelectorAll('.preview-action-btn');
+                    if (buttons.length >= 2) {
+                        buttons[0].click(); // 最初の許可ボタン
+                        setTimeout(() => {
+                            buttons[3].click(); // 2番目のブロックボタン
+                            
+                            setTimeout(() => {
+                                const allowBtn = document.querySelector('.ad-choice-button-allow');
+                                if (allowBtn) allowBtn.click();
+                            }, 500);
+                        }, 500);
+                    }
+                }, 2000);
+
+                const result = await Promise.race([
+                    dialogPromise,
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('タイムアウト')), 15000))
+                ]);
+                
+                if (result.individualChoices && Object.keys(result.individualChoices).length > 0) {
+                    addTestResult('✓ 個別選択結果が正常に処理されました', 'success',
+                        `結果: ${JSON.stringify(result.individualChoices)}`);
+                } else {
+                    addTestResult('✗ 個別選択結果の処理に問題があります', 'error',
+                        `結果: ${JSON.stringify(result.individualChoices)}`);
+                }
+                
+            } catch (error) {
+                addTestResult('✗ 結果処理テストでエラーが発生', 'error', error.message);
+            }
+        }
+
+        // 5. 一括操作テスト
+        async function testBulkOperations() {
+            addTestResult('一括操作テストを開始...', 'info');
+            
+            try {
+                const mockAds = [
+                    { element: document.getElementById('ad1'), type: 'overlay', id: 'test-ad-1' },
+                    { element: document.getElementById('ad2'), type: 'banner', id: 'test-ad-2' },
+                    { element: document.getElementById('ad3'), type: 'popup', id: 'test-ad-3' }
+                ];
+
+                const dialogPromise = window.userChoiceDialog.showChoiceDialog(mockAds);
+                
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        const bulkAllowBtn = document.querySelector('.ad-choice-bulk-button.allow');
+                        const bulkBlockBtn = document.querySelector('.ad-choice-bulk-button.block');
+                        
+                        if (bulkAllowBtn && bulkBlockBtn) {
+                            bulkAllowBtn.click();
+                            
+                            setTimeout(() => {
+                                const selectedItems = document.querySelectorAll('.preview-item.selected');
+                                if (selectedItems.length === 3) {
+                                    addTestResult('✓ 一括許可操作が正常に動作', 'success',
+                                        `${selectedItems.length}個のアイテムが選択されました`);
+                                } else {
+                                    addTestResult('✗ 一括許可操作に問題があります', 'error',
+                                        `選択されたアイテム数: ${selectedItems.length}`);
+                                }
+                                
+                                // 一括ブロックもテスト
+                                bulkBlockBtn.click();
+                                
+                                setTimeout(() => {
+                                    const blockedItems = document.querySelectorAll('.preview-item.blocked');
+                                    if (blockedItems.length === 3) {
+                                        addTestResult('✓ 一括ブロック操作が正常に動作', 'success',
+                                            `${blockedItems.length}個のアイテムがブロックされました`);
+                                    } else {
+                                        addTestResult('✗ 一括ブロック操作に問題があります', 'error',
+                                            `ブロックされたアイテム数: ${blockedItems.length}`);
+                                    }
+                                    resolve();
+                                }, 500);
+                            }, 500);
+                        } else {
+                            addTestResult('✗ 一括操作ボタンが見つかりません', 'error',
+                                `許可ボタン: ${!!bulkAllowBtn}, ブロックボタン: ${!!bulkBlockBtn}`);
+                            resolve();
+                        }
+                    }, 2000);
+                });
+
+                // ダイアログを閉じる
+                const closeBtn = document.querySelector('.ad-choice-close');
+                if (closeBtn) closeBtn.click();
+                
+            } catch (error) {
+                addTestResult('✗ 一括操作テストでエラーが発生', 'error', error.message);
+            }
+        }
+
+        // 6. 拡大表示での選択テスト
+        async function testExpandedModal() {
+            addTestResult('拡大表示での選択テストを開始...', 'info');
+            
+            try {
+                const mockAds = [
+                    { element: document.getElementById('ad1'), type: 'overlay', id: 'test-ad-1' }
+                ];
+
+                const dialogPromise = window.userChoiceDialog.showChoiceDialog(mockAds);
+                
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        const previewItem = document.querySelector('.preview-item');
+                        if (previewItem) {
+                            previewItem.click(); // 拡大表示を開く
+                            
+                            setTimeout(() => {
+                                const expandedModal = document.querySelector('.preview-expanded-modal');
+                                const expandedAllowBtn = document.querySelector('.preview-expanded-action-btn.allow');
+                                
+                                if (expandedModal && expandedAllowBtn) {
+                                    expandedAllowBtn.click();
+                                    
+                                    setTimeout(() => {
+                                        const selectedItem = document.querySelector('.preview-item.selected');
+                                        if (selectedItem) {
+                                            addTestResult('✓ 拡大表示での選択が正常に動作', 'success',
+                                                '拡大モーダルからの選択が反映されました');
+                                        } else {
+                                            addTestResult('✗ 拡大表示での選択に問題があります', 'error');
+                                        }
+                                        resolve();
+                                    }, 500);
+                                } else {
+                                    addTestResult('✗ 拡大表示モーダルまたはボタンが見つかりません', 'error',
+                                        `モーダル: ${!!expandedModal}, ボタン: ${!!expandedAllowBtn}`);
+                                    resolve();
+                                }
+                            }, 1000);
+                        } else {
+                            addTestResult('✗ プレビューアイテムが見つかりません', 'error');
+                            resolve();
+                        }
+                    }, 2000);
+                });
+
+                // ダイアログを閉じる
+                const closeBtn = document.querySelector('.ad-choice-close');
+                if (closeBtn) closeBtn.click();
+                
+            } catch (error) {
+                addTestResult('✗ 拡大表示での選択テストでエラーが発生', 'error', error.message);
+            }
+        }
+
+        // 7. 選択統計テスト
+        async function testSelectionStats() {
+            addTestResult('選択統計テストを開始...', 'info');
+            
+            try {
+                const mockAds = [
+                    { element: document.getElementById('ad1'), type: 'overlay', id: 'test-ad-1' },
+                    { element: document.getElementById('ad2'), type: 'banner', id: 'test-ad-2' },
+                    { element: document.getElementById('ad3'), type: 'popup', id: 'test-ad-3' }
+                ];
+
+                const dialogPromise = window.userChoiceDialog.showChoiceDialog(mockAds);
+                
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        const summaryElement = document.querySelector('.ad-choice-selection-summary');
+                        const progressBar = document.querySelector('.selection-progress-bar');
+                        
+                        if (summaryElement && progressBar) {
+                            // 個別選択を実行
+                            const allowBtn = document.querySelector('.preview-action-btn.allow');
+                            if (allowBtn) {
+                                allowBtn.click();
+                                
+                                setTimeout(() => {
+                                    const allowValue = document.querySelector('.summary-value.allow');
+                                    const progressFill = document.querySelector('.progress-fill');
+                                    
+                                    if (allowValue && allowValue.textContent === '1' && progressFill) {
+                                        addTestResult('✓ 選択統計が正常に更新されています', 'success',
+                                            '統計表示と進捗バーが正しく動作');
+                                    } else {
+                                        addTestResult('✗ 選択統計の更新に問題があります', 'error',
+                                            `許可数: ${allowValue?.textContent}, 進捗バー: ${!!progressFill}`);
+                                    }
+                                    resolve();
+                                }, 500);
+                            } else {
+                                addTestResult('✗ 許可ボタンが見つかりません', 'error');
+                                resolve();
+                            }
+                        } else {
+                            addTestResult('✗ 統計要素または進捗バーが見つかりません', 'error',
+                                `統計: ${!!summaryElement}, 進捗バー: ${!!progressBar}`);
+                            resolve();
+                        }
+                    }, 2000);
+                });
+
+                // ダイアログを閉じる
+                const closeBtn = document.querySelector('.ad-choice-close');
+                if (closeBtn) closeBtn.click();
+                
+            } catch (error) {
+                addTestResult('✗ 選択統計テストでエラーが発生', 'error', error.message);
+            }
+        }
+
+        // 全テスト実行
+        async function runAllTests() {
+            addTestResult('=== 全テスト実行開始 ===', 'info');
+            clearResults();
+            
+            const tests = [
+                testIndividualButtons,
+                testSelectionState,
+                testVisualFeedback,
+                testResultProcessing,
+                testBulkOperations,
+                testExpandedModal,
+                testSelectionStats
+            ];
+
+            for (let i = 0; i < tests.length; i++) {
+                try {
+                    await tests[i]();
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                } catch (error) {
+                    addTestResult(`テスト${i + 1}でエラーが発生`, 'error', error.message);
+                }
+            }
+            
+            addTestResult(`=== 全テスト実行完了: ${passedTests}/${testCount} 成功 ===`, 
+                passedTests === testCount ? 'success' : 'warning');
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateComponentStatus();
+            addTestResult('タスク7: 個別選択機能実装テスト準備完了', 'info');
+            
+            setInterval(updateComponentStatus, 5000);
+        });
+
+        window.addEventListener('error', function(e) {
+            addTestResult(`グローバルエラー: ${e.message}`, 'error', e.filename + ':' + e.lineno);
+        });
+
+        console.log('タスク7: 個別選択機能実装テスト準備完了');
+    </script>
+</body>
+</html>

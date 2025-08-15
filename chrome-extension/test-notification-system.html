@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知システムテスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: #0056b3;
+        }
+        
+        .status-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .ad-element {
+            position: fixed;
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 9999;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>通知システムテスト</h1>
+        <p>広告検出時の通知機能をテストします。</p>
+        
+        <div class="status-display">
+            <h3>通知システム状態:</h3>
+            <div id="status-display"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="button" onclick="createTestAd()">テスト広告を作成</button>
+            <button class="button" onclick="triggerDetection()">検出をトリガー</button>
+            <button class="button" onclick="testBadgeUpdate()">バッジ更新テスト</button>
+            <button class="button" onclick="testUserChoiceDialog()">ユーザー選択ダイアログテスト</button>
+            <button class="button" onclick="clearTestAds()">テスト広告をクリア</button>
+            <button class="button" onclick="runAllTests()">全テスト実行</button>
+            <button class="button" onclick="clearResults()">結果クリア</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let testAdCount = 0;
+
+        function addTestResult(testName, success, message, details = null) {
+            const result = {
+                testName,
+                success,
+                message,
+                details,
+                timestamp: new Date().toISOString()
+            };
+            
+            testResults.push(result);
+            displayTestResult(result);
+        }
+
+        function displayTestResult(result) {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${result.success ? 'success' : 'error'}`;
+            
+            let content = `[${result.timestamp}] ${result.testName}: ${result.message}`;
+            if (result.details) {
+                content += '\n詳細: ' + JSON.stringify(result.details, null, 2);
+            }
+            
+            resultDiv.textContent = content;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function updateStatusDisplay() {
+            const statusDiv = document.getElementById('status-display');
+            
+            const status = {
+                timestamp: new Date().toISOString(),
+                chrome: {
+                    available: typeof chrome !== 'undefined',
+                    runtime: !!(typeof chrome !== 'undefined' && chrome.runtime),
+                    notifications: !!(typeof chrome !== 'undefined' && chrome.notifications)
+                },
+                popupDetector: {
+                    available: !!window.popupDetector,
+                    canDetect: window.popupDetector ? typeof window.popupDetector.detectPopups === 'function' : false,
+                    pendingChoices: window.popupDetector ? window.popupDetector.pendingUserChoices.size : 0,
+                    processedElements: window.popupDetector ? window.popupDetector.processedElements.size : 0,
+                    lastUserChoiceTime: window.popupDetector ? window.popupDetector.lastUserChoiceTime : 0
+                },
+                testAds: {
+                    count: document.querySelectorAll('.test-ad').length,
+                    visible: document.querySelectorAll('.test-ad:not([style*="display: none"])').length
+                }
+            };
+            
+            statusDiv.textContent = JSON.stringify(status, null, 2);
+        }
+
+        // testNotificationPermission関数を削除（Chrome通知は使用しないため）
+
+        function createTestAd() {
+            try {
+                testAdCount++;
+                const ad = document.createElement('div');
+                ad.className = 'ad-element test-ad';
+                ad.id = `test-ad-${testAdCount}`;
+                ad.style.cssText = `
+                    position: fixed;
+                    top: ${Math.random() * 300 + 50}px;
+                    right: ${Math.random() * 200 + 20}px;
+                    width: 300px;
+                    height: 250px;
+                    background: #ff6b6b;
+                    color: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    z-index: ${9000 + testAdCount};
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                `;
+                ad.innerHTML = `
+                    <h3>テスト広告 #${testAdCount}</h3>
+                    <p>これは検出テスト用の広告要素です。</p>
+                    <button onclick="this.parentElement.remove()" style="background: white; color: #ff6b6b; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">閉じる</button>
+                `;
+                
+                document.body.appendChild(ad);
+                
+                addTestResult(
+                    'テスト広告作成',
+                    true,
+                    `テスト広告 #${testAdCount} を作成しました`,
+                    { 
+                        adId: ad.id,
+                        position: { top: ad.style.top, right: ad.style.right },
+                        zIndex: ad.style.zIndex
+                    }
+                );
+                
+            } catch (error) {
+                addTestResult('テスト広告作成', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        async function triggerDetection() {
+            try {
+                if (!window.popupDetector || typeof window.popupDetector.detectPopups !== 'function') {
+                    addTestResult('検出トリガー', false, 'PopupDetectorが利用できません');
+                    return;
+                }
+                
+                const detectedPopups = await window.popupDetector.detectPopups();
+                const testAds = document.querySelectorAll('.test-ad');
+                
+                addTestResult(
+                    '検出トリガー',
+                    detectedPopups.length > 0,
+                    `検出を実行しました (検出数: ${detectedPopups.length}, テスト広告数: ${testAds.length})`,
+                    { 
+                        detectedCount: detectedPopups.length,
+                        testAdCount: testAds.length,
+                        detectedElements: detectedPopups.map(p => ({
+                            tag: p.element.tagName,
+                            id: p.element.id,
+                            type: p.type
+                        }))
+                    }
+                );
+                
+                // ユーザー選択ダイアログが表示されることを通知
+                if (detectedPopups.length > 0) {
+                    addTestResult(
+                        'ユーザー選択通知',
+                        true,
+                        '右上にユーザー選択通知が表示されるはずです。ブロックまたは許可を選択してください。',
+                        { dialogExpected: true }
+                    );
+                }
+                
+            } catch (error) {
+                addTestResult('検出トリガー', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        // testDirectNotification関数を削除（Chrome通知は使用しないため）
+
+        function testBadgeUpdate() {
+            try {
+                if (typeof chrome === 'undefined' || !chrome.runtime) {
+                    addTestResult('バッジ更新テスト', false, 'Chrome Runtime APIが利用できません');
+                    return;
+                }
+                
+                // バッジ更新をテスト
+                chrome.runtime.sendMessage({
+                    type: 'UPDATE_BADGE',
+                    data: { count: 42 }
+                }, (response) => {
+                    if (chrome.runtime.lastError) {
+                        addTestResult('バッジ更新テスト', false, 'バッジ更新エラー', { error: chrome.runtime.lastError.message });
+                    } else {
+                        addTestResult(
+                            'バッジ更新テスト',
+                            true,
+                            'バッジ更新メッセージを送信しました',
+                            { response }
+                        );
+                    }
+                });
+                
+            } catch (error) {
+                addTestResult('バッジ更新テスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function clearTestAds() {
+            try {
+                const testAds = document.querySelectorAll('.test-ad');
+                const count = testAds.length;
+                
+                testAds.forEach(ad => ad.remove());
+                testAdCount = 0;
+                
+                addTestResult(
+                    'テスト広告クリア',
+                    true,
+                    `${count}個のテスト広告を削除しました`,
+                    { removedCount: count }
+                );
+                
+            } catch (error) {
+                addTestResult('テスト広告クリア', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('全テスト開始', true, '通知システムの全テストを実行します...');
+            
+            setTimeout(() => createTestAd(), 100);
+            setTimeout(() => createTestAd(), 300);
+            setTimeout(() => triggerDetection(), 800);
+            setTimeout(() => testBadgeUpdate(), 1200);
+            
+            setTimeout(() => {
+                const successCount = testResults.filter(r => r.success).length - 1; // -1 for start message
+                const totalCount = testResults.length - 1;
+                addTestResult(
+                    '全テスト完了',
+                    successCount >= totalCount * 0.7, // 70%以上成功でOK
+                    `${successCount}/${totalCount} テストが成功しました`,
+                    { successRate: `${Math.round((successCount/totalCount) * 100)}%` }
+                );
+            }, 3500);
+        }
+
+        function testUserChoiceDialog() {
+            try {
+                if (!window.userChoiceDialog) {
+                    addTestResult('ユーザー選択ダイアログテスト', false, 'UserChoiceDialogが利用できません');
+                    return;
+                }
+                
+                // テスト用の広告データを作成
+                const testAds = [
+                    { type: 'overlay', element: { tagName: 'DIV', id: 'test-ad-1' } },
+                    { type: 'popup', element: { tagName: 'DIV', id: 'test-ad-2' } }
+                ];
+                
+                addTestResult('ユーザー選択通知テスト', true, '右上にユーザー選択通知を表示します...');
+                
+                // ダイアログを表示
+                window.userChoiceDialog.showChoiceDialog(testAds).then((result) => {
+                    addTestResult(
+                        'ユーザー選択結果',
+                        true,
+                        `ユーザーが「${result.action}」を選択しました`,
+                        {
+                            action: result.action,
+                            options: result.options,
+                            responseTime: result.responseTime
+                        }
+                    );
+                }).catch((error) => {
+                    addTestResult('ユーザー選択エラー', false, 'ダイアログエラー', { error: error.message });
+                });
+                
+            } catch (error) {
+                addTestResult('ユーザー選択ダイアログテスト', false, 'テスト実行エラー', { error: error.message });
+            }
+        }
+
+        function clearResults() {
+            testResults = [];
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatusDisplay();
+            setInterval(updateStatusDisplay, 3000); // 3秒ごとにステータス更新
+        });
+    </script>
+</body>
+</html>

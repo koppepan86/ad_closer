@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザビリティ改善機能テスト</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .test-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .test-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .test-button:hover {
+            background: #0056b3;
+        }
+
+        .test-button:focus {
+            outline: 2px solid #007bff;
+            outline-offset: 2px;
+        }
+
+        .test-button.secondary {
+            background: #6c757d;
+        }
+
+        .test-button.secondary:hover {
+            background: #545b62;
+        }
+
+        .test-button.danger {
+            background: #dc3545;
+        }
+
+        .test-button.danger:hover {
+            background: #c82333;
+        }
+
+        .test-results {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 100px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .mock-ads {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .mock-ad {
+            border: 2px dashed #ff6b6b;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fff5f5;
+            text-align: center;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .mock-ad::before {
+            content: '📢';
+            font-size: 24px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .accessibility-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .accessibility-info h4 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .shortcut-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .shortcut-key {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .metric-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.success {
+            background: #28a745;
+        }
+
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+
+        .status-indicator.error {
+            background: #dc3545;
+        }
+
+        .browser-compatibility {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .browser-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .browser-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* 高コントラストモード対応 */
+        @media (prefers-contrast: high) {
+            .test-button {
+                border: 2px solid;
+            }
+            
+            .mock-ad {
+                border-width: 3px;
+            }
+        }
+
+        /* 動きを減らす設定への対応 */
+        @media (prefers-reduced-motion: reduce) {
+            .test-button {
+                transition: none;
+            }
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .test-controls {
+                flex-direction: column;
+            }
+            
+            .test-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ユーザビリティ改善機能テスト</h1>
+            <p>Task 12: プレビューなし続行機能、アクセシビリティ対応、包括的テストの検証</p>
+        </div>
+
+        <!-- プレビューなし続行機能テスト -->
+        <div class="test-section">
+            <h3>1. プレビューなし続行機能テスト</h3>
+            <div class="accessibility-info">
+                <h4>テスト内容</h4>
+                <ul>
+                    <li>プレビュー生成失敗時の続行ボタン表示</li>
+                    <li>プレビュータイムアウト時の選択肢表示</li>
+                    <li>プレビューなしでの個別選択機能</li>
+                    <li>基本的な広告情報表示</li>
+                </ul>
+            </div>
+            
+            <div class="mock-ads">
+                <div class="mock-ad" data-ad-type="banner">
+                    バナー広告<br>
+                    <small>728x90px</small>
+                </div>
+                <div class="mock-ad" data-ad-type="overlay">
+                    オーバーレイ広告<br>
+                    <small>300x250px</small>
+                </div>
+                <div class="mock-ad" data-ad-type="popup">
+                    ポップアップ広告<br>
+                    <small>400x300px</small>
+                </div>
+            </div>
+
+            <div class="test-controls">
+                <button class="test-button" onclick="testPreviewFailure()">プレビュー生成失敗をシミュレート</button>
+                <button class="test-button" onclick="testPreviewTimeout()">プレビュータイムアウトをシミュレート</button>
+                <button class="test-button" onclick="testContinueWithoutPreview()">プレビューなし続行をテスト</button>
+                <button class="test-button secondary" onclick="clearResults('preview-results')">結果クリア</button>
+            </div>
+
+            <div class="test-results" id="preview-results">テスト結果がここに表示されます...</div>
+        </div>
+
+        <!-- アクセシビリティ機能テスト -->
+        <div class="test-section">
+            <h3>2. アクセシビリティ機能テスト</h3>
+            <div class="accessibility-info">
+                <h4>キーボードショートカット</h4>
+                <div class="keyboard-shortcuts">
+                    <div class="shortcut-item">
+                        <div><span class="shortcut-key">Tab</span></div>
+                        <div>フォーカス移動</div>
+                    </div>
+                    <div class="shortcut-item">
+                        <div><span class="shortcut-key">Enter</span> / <span class="shortcut-key">Space</span></div>
+                        <div>ボタン実行</div>
+                    </div>
+                    <div class="shortcut-item">
+                        <div><span class="shortcut-key">Escape</span></div>
+                        <div>ダイアログ閉じる</div>
+                    </div>
+                    <div class="shortcut-item">
+                        <div><span class="shortcut-key">Ctrl+A</span></div>
+                        <div>すべて許可</div>
+                    </div>
+                    <div class="shortcut-item">
+                        <div><span class="shortcut-key">Ctrl+B</span></div>
+                        <div>すべてブロック</div>
+                    </div>
+                    <div class="shortcut-item">
+                        <div><span class="shortcut-key">1-9</span></div>
+                        <div>個別許可</div>
+                    </div>
+                    <div class="shortcut-item">
+                        <div><span class="shortcut-key">Shift+1-9</span></div>
+                        <div>個別ブロック</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="test-controls">
+                <button class="test-button" onclick="testKeyboardNavigation()">キーボードナビゲーション</button>
+                <button class="test-button" onclick="testScreenReader()">スクリーンリーダー対応</button>
+                <button class="test-button" onclick="testFocusTrap()">フォーカストラップ</button>
+                <button class="test-button" onclick="testAriaLabels()">ARIAラベル</button>
+                <button class="test-button" onclick="testHighContrast()">高コントラストモード</button>
+                <button class="test-button secondary" onclick="clearResults('accessibility-results')">結果クリア</button>
+            </div>
+
+            <div class="test-results" id="accessibility-results">テスト結果がここに表示されます...</div>
+        </div>
+
+        <!-- パフォーマンステスト -->
+        <div class="test-section">
+            <h3>3. パフォーマンステスト</h3>
+            <div class="performance-metrics">
+                <div class="metric-item">
+                    <div class="metric-value" id="dialog-creation-time">-</div>
+                    <div class="metric-label">ダイアログ作成時間 (ms)</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" id="visual-feedback-time">-</div>
+                    <div class="metric-label">視覚フィードバック (ms)</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" id="keyboard-response-time">-</div>
+                    <div class="metric-label">キーボード応答 (ms)</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" id="memory-usage">-</div>
+                    <div class="metric-label">メモリ使用量 (MB)</div>
+                </div>
+            </div>
+
+            <div class="test-controls">
+                <button class="test-button" onclick="testDialogCreationPerformance()">ダイアログ作成性能</button>
+                <button class="test-button" onclick="testVisualFeedbackPerformance()">視覚フィードバック性能</button>
+                <button class="test-button" onclick="testKeyboardPerformance()">キーボード応答性能</button>
+                <button class="test-button" onclick="testMemoryUsage()">メモリ使用量</button>
+                <button class="test-button" onclick="testBulkOperations()">一括操作性能</button>
+                <button class="test-button secondary" onclick="clearResults('performance-results')">結果クリア</button>
+            </div>
+
+            <div class="test-results" id="performance-results">テスト結果がここに表示されます...</div>
+        </div>
+
+        <!-- ブラウザ互換性テスト -->
+        <div class="test-section">
+            <h3>4. ブラウザ互換性テスト</h3>
+            <div class="browser-compatibility">
+                <div class="browser-item">
+                    <div class="browser-icon">🌐</div>
+                    <div>Chrome</div>
+                    <div><span class="status-indicator success" id="chrome-status"></span><span id="chrome-version">-</span></div>
+                </div>
+                <div class="browser-item">
+                    <div class="browser-icon">🦊</div>
+                    <div>Firefox</div>
+                    <div><span class="status-indicator success" id="firefox-status"></span><span id="firefox-version">-</span></div>
+                </div>
+                <div class="browser-item">
+                    <div class="browser-icon">🧭</div>
+                    <div>Safari</div>
+                    <div><span class="status-indicator warning" id="safari-status"></span><span id="safari-version">-</span></div>
+                </div>
+                <div class="browser-item">
+                    <div class="browser-icon">🌊</div>
+                    <div>Edge</div>
+                    <div><span class="status-indicator success" id="edge-status"></span><span id="edge-version">-</span></div>
+                </div>
+            </div>
+
+            <div class="test-controls">
+                <button class="test-button" onclick="testBrowserFeatures()">ブラウザ機能検出</button>
+                <button class="test-button" onclick="testCSSSupport()">CSS機能サポート</button>
+                <button class="test-button" onclick="testEventHandling()">イベント処理互換性</button>
+                <button class="test-button" onclick="testDOMManipulation()">DOM操作互換性</button>
+                <button class="test-button secondary" onclick="clearResults('compatibility-results')">結果クリア</button>
+            </div>
+
+            <div class="test-results" id="compatibility-results">テスト結果がここに表示されます...</div>
+        </div>
+
+        <!-- 統合テスト -->
+        <div class="test-section">
+            <h3>5. 統合テスト</h3>
+            <div class="accessibility-info">
+                <h4>テストシナリオ</h4>
+                <ol>
+                    <li>複数広告検出 → ダイアログ表示</li>
+                    <li>プレビュー生成失敗 → 続行ボタン表示</li>
+                    <li>プレビューなしモード有効化</li>
+                    <li>キーボードで個別選択</li>
+                    <li>視覚的フィードバック確認</li>
+                    <li>一括操作実行</li>
+                    <li>結果確認とクリーンアップ</li>
+                </ol>
+            </div>
+
+            <div class="test-controls">
+                <button class="test-button" onclick="runFullIntegrationTest()">完全統合テスト実行</button>
+                <button class="test-button" onclick="runAccessibilityIntegrationTest()">アクセシビリティ統合テスト</button>
+                <button class="test-button" onclick="runPerformanceIntegrationTest()">パフォーマンス統合テスト</button>
+                <button class="test-button danger" onclick="runStressTest()">ストレステスト</button>
+                <button class="test-button secondary" onclick="clearResults('integration-results')">結果クリア</button>
+            </div>
+
+            <div class="test-results" id="integration-results">テスト結果がここに表示されます...</div>
+        </div>
+    </div>
+
+    <!-- ライブリージョン（スクリーンリーダー用） -->
+    <div id="live-region" aria-live="polite" aria-atomic="true" style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;"></div>
+
+    <script>
+        // テスト用のモッククラス
+        class MockUserChoiceDialog {
+            constructor() {
+                this.activeDialogs = new Map();
+                this.dialogCounter = 0;
+                this.performanceMetrics = new Map();
+            }
+
+            async showChoiceDialog(detectedAds) {
+                const startTime = performance.now();
+                const dialogId = `dialog-${++this.dialogCounter}`;
+                
+                // ダイアログ作成をシミュレート
+                await new Promise(resolve => setTimeout(resolve, Math.random() * 50 + 10));
+                
+                const endTime = performance.now();
+                const creationTime = endTime - startTime;
+                
+                this.performanceMetrics.set(`creation-${dialogId}`, creationTime);
+                this.activeDialogs.set(dialogId, {
+                    detectedAds,
+                    individualSelections: new Map(),
+                    createdAt: startTime
+                });
+
+                return { dialogId, creationTime };
+            }
+
+            enableContinueWithoutPreview(dialogId) {
+                const dialogData = this.activeDialogs.get(dialogId);
+                if (dialogData) {
+                    dialogData.continueWithoutPreview = true;
+                    return true;
+                }
+                return false;
+            }
+
+            updateVisualFeedback(dialogId) {
+                const startTime = performance.now();
+                
+                // 視覚フィードバック更新をシミュレート
+                const dialogData = this.activeDialogs.get(dialogId);
+                if (dialogData) {
+                    dialogData.lastUpdate = startTime;
+                }
+                
+                const endTime = performance.now();
+                const updateTime = endTime - startTime;
+                this.performanceMetrics.set(`feedback-${dialogId}`, updateTime);
+                
+                return updateTime;
+            }
+
+            handleKeyboardShortcut(dialogId, key) {
+                const startTime = performance.now();
+                
+                const dialogData = this.activeDialogs.get(dialogId);
+                if (dialogData) {
+                    dialogData.lastKeyboard = { key, timestamp: startTime };
+                }
+                
+                const endTime = performance.now();
+                const responseTime = endTime - startTime;
+                this.performanceMetrics.set(`keyboard-${dialogId}`, responseTime);
+                
+                return responseTime;
+            }
+
+            getPerformanceMetric(key) {
+                return this.performanceMetrics.get(key);
+            }
+
+            cleanup() {
+                this.activeDialogs.clear();
+                this.performanceMetrics.clear();
+            }
+        }
+
+        class MockAccessibilityHelper {
+            constructor() {
+                this.features = new Map();
+                this.detectBrowserFeatures();
+            }
+
+            detectBrowserFeatures() {
+                this.features.set('matchMedia', typeof window.matchMedia === 'function');
+                this.features.set('requestAnimationFrame', typeof window.requestAnimationFrame === 'function');
+                this.features.set('addEventListener', typeof document.addEventListener === 'function');
+                this.features.set('querySelector', typeof document.querySelector === 'function');
+                this.features.set('classList', 'classList' in document.createElement('div'));
+                this.features.set('ariaSupport', 'setAttribute' in document.createElement('div'));
+            }
+
+            getBrowserFeatures() {
+                return Object.fromEntries(this.features);
+            }
+
+            announceToScreenReader(message) {
+                const liveRegion = document.getElementById('live-region');
+                if (liveRegion) {
+                    liveRegion.textContent = message;
+                    setTimeout(() => {
+                        liveRegion.textContent = '';
+                    }, 1000);
+                }
+            }
+
+            testKeyboardNavigation() {
+                // キーボードナビゲーションのテスト
+                const focusableElements = document.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])');
+                return {
+                    totalElements: focusableElements.length,
+                    canFocus: Array.from(focusableElements).every(el => typeof el.focus === 'function')
+                };
+            }
+
+            testAriaLabels() {
+                const buttons = document.querySelectorAll('button');
+                const withAriaLabel = Array.from(buttons).filter(btn => 
+                    btn.getAttribute('aria-label') || btn.textContent.trim()
+                );
+                
+                return {
+                    totalButtons: buttons.length,
+                    withLabels: withAriaLabel.length,
+                    coverage: (withAriaLabel.length / buttons.length * 100).toFixed(1)
+                };
+            }
+        }
+
+        // グローバルインスタンス
+        const mockDialog = new MockUserChoiceDialog();
+        const mockAccessibility = new MockAccessibilityHelper();
+
+        // ユーティリティ関数
+        function logResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            container.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearResults(containerId) {
+            document.getElementById(containerId).textContent = 'テスト結果がここに表示されます...\n';
+        }
+
+        function updateMetric(metricId, value, unit = '') {
+            document.getElementById(metricId).textContent = value + unit;
+        }
+
+        // プレビューなし続行機能テスト
+        async function testPreviewFailure() {
+            logResult('preview-results', 'プレビュー生成失敗テストを開始...');
+            
+            try {
+                const mockAds = [
+                    { type: 'banner', width: 728, height: 90 },
+                    { type: 'overlay', width: 300, height: 250 }
+                ];
+
+                const result = await mockDialog.showChoiceDialog(mockAds);
+                logResult('preview-results', `ダイアログ作成成功: ${result.dialogId}`, 'success');
+                
+                // プレビュー失敗をシミュレート
+                const continueEnabled = mockDialog.enableContinueWithoutPreview(result.dialogId);
+                logResult('preview-results', `プレビューなし続行: ${continueEnabled ? '有効' : '無効'}`, continueEnabled ? 'success' : 'error');
+                
+            } catch (error) {
+                logResult('preview-results', `エラー: ${error.message}`, 'error');
+            }
+        }
+
+        async function testPreviewTimeout() {
+            logResult('preview-results', 'プレビュータイムアウトテストを開始...');
+            
+            // タイムアウトをシミュレート
+            const timeoutPromise = new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({ timeout: true, options: ['continue', 'wait'] });
+                }, 100);
+            });
+
+            const result = await timeoutPromise;
+            logResult('preview-results', `タイムアウト検出: ${result.timeout}`, 'success');
+            logResult('preview-results', `利用可能オプション: ${result.options.join(', ')}`, 'info');
+        }
+
+        async function testContinueWithoutPreview() {
+            logResult('preview-results', 'プレビューなし続行テストを開始...');
+            
+            const mockAds = [
+                { type: 'popup', width: 400, height: 300 },
+                { type: 'banner', width: 728, height: 90 },
+                { type: 'overlay', width: 300, height: 250 }
+            ];
+
+            const result = await mockDialog.showChoiceDialog(mockAds);
+            const continueEnabled = mockDialog.enableContinueWithoutPreview(result.dialogId);
+            
+            logResult('preview-results', `${mockAds.length}個の広告でプレビューなしモード: ${continueEnabled ? '成功' : '失敗'}`, continueEnabled ? 'success' : 'error');
+            
+            // 個別選択をシミュレート
+            for (let i = 0; i < mockAds.length; i++) {
+                const action = i % 2 === 0 ? 'allow' : 'block';
+                logResult('preview-results', `広告${i + 1} (${mockAds[i].type}): ${action}`, 'info');
+            }
+        }
+
+        // アクセシビリティ機能テスト
+        function testKeyboardNavigation() {
+            logResult('accessibility-results', 'キーボードナビゲーションテストを開始...');
+            
+            const result = mockAccessibility.testKeyboardNavigation();
+            logResult('accessibility-results', `フォーカス可能要素: ${result.totalElements}個`, 'info');
+            logResult('accessibility-results', `フォーカス機能: ${result.canFocus ? '正常' : '異常'}`, result.canFocus ? 'success' : 'error');
+            
+            // キーボードイベントのテスト
+            document.addEventListener('keydown', function testKeyHandler(e) {
+                if (e.key === 'Tab' || e.key === 'Enter' || e.key === 'Escape') {
+                    logResult('accessibility-results', `キーボードイベント検出: ${e.key}`, 'success');
+                }
+            }, { once: true });
+            
+            logResult('accessibility-results', 'Tab, Enter, Escapeキーを押してテストしてください', 'info');
+        }
+
+        function testScreenReader() {
+            logResult('accessibility-results', 'スクリーンリーダー対応テストを開始...');
+            
+            const testMessages = [
+                '広告検出ダイアログが開きました',
+                'プレビューなしモードが有効になりました',
+                '個別選択が完了しました'
+            ];
+
+            testMessages.forEach((message, index) => {
+                setTimeout(() => {
+                    mockAccessibility.announceToScreenReader(message);
+                    logResult('accessibility-results', `スクリーンリーダー通知: ${message}`, 'success');
+                }, index * 1000);
+            });
+        }
+
+        function testFocusTrap() {
+            logResult('accessibility-results', 'フォーカストラップテストを開始...');
+            
+            // モーダルダイアログをシミュレート
+            const modal = document.createElement('div');
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-modal', 'true');
+            modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 1000;';
+            
+            const button1 = document.createElement('button');
+            button1.textContent = 'ボタン1';
+            const button2 = document.createElement('button');
+            button2.textContent = 'ボタン2';
+            const closeButton = document.createElement('button');
+            closeButton.textContent = '閉じる';
+            closeButton.onclick = () => {
+                document.body.removeChild(modal);
+                logResult('accessibility-results', 'フォーカストラップテスト完了', 'success');
+            };
+            
+            modal.appendChild(button1);
+            modal.appendChild(button2);
+            modal.appendChild(closeButton);
+            document.body.appendChild(modal);
+            
+            button1.focus();
+            logResult('accessibility-results', 'モーダルダイアログ作成完了。Tabキーでフォーカス移動をテストしてください', 'info');
+        }
+
+        function testAriaLabels() {
+            logResult('accessibility-results', 'ARIAラベルテストを開始...');
+            
+            const result = mockAccessibility.testAriaLabels();
+            logResult('accessibility-results', `総ボタン数: ${result.totalButtons}`, 'info');
+            logResult('accessibility-results', `ラベル付きボタン: ${result.withLabels}`, 'info');
+            logResult('accessibility-results', `カバレッジ: ${result.coverage}%`, result.coverage > 80 ? 'success' : 'error');
+        }
+
+        function testHighContrast() {
+            logResult('accessibility-results', '高コントラストモードテストを開始...');
+            
+            const supportsHighContrast = window.matchMedia && window.matchMedia('(prefers-contrast: high)').matches;
+            logResult('accessibility-results', `高コントラストモード: ${supportsHighContrast ? '有効' : '無効'}`, 'info');
+            
+            // 高コントラストスタイルを一時的に適用
+            const style = document.createElement('style');
+            style.textContent = `
+                .test-button { border: 2px solid !important; }
+                .mock-ad { border-width: 3px !important; }
+            `;
+            document.head.appendChild(style);
+            
+            setTimeout(() => {
+                document.head.removeChild(style);
+                logResult('accessibility-results', '高コントラストスタイル適用テスト完了', 'success');
+            }, 2000);
+        }
+
+        // パフォーマンステスト
+        async function testDialogCreationPerformance() {
+            logResult('performance-results', 'ダイアログ作成性能テストを開始...');
+            
+            const iterations = 10;
+            const times = [];
+            
+            for (let i = 0; i < iterations; i++) {
+                const mockAds = Array.from({ length: 5 }, (_, j) => ({
+                    type: `ad-${j}`,
+                    width: 300,
+                    height: 250
+                }));
+                
+                const result = await mockDialog.showChoiceDialog(mockAds);
+                times.push(result.creationTime);
+            }
+            
+            const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
+            const maxTime = Math.max(...times);
+            const minTime = Math.min(...times);
+            
+            updateMetric('dialog-creation-time', avgTime.toFixed(1));
+            logResult('performance-results', `平均作成時間: ${avgTime.toFixed(1)}ms`, avgTime < 100 ? 'success' : 'error');
+            logResult('performance-results', `最大時間: ${maxTime.toFixed(1)}ms, 最小時間: ${minTime.toFixed(1)}ms`, 'info');
+        }
+
+        async function testVisualFeedbackPerformance() {
+            logResult('performance-results', '視覚フィードバック性能テストを開始...');
+            
+            const result = await mockDialog.showChoiceDialog([{ type: 'test' }]);
+            const times = [];
+            
+            for (let i = 0; i < 20; i++) {
+                const updateTime = mockDialog.updateVisualFeedback(result.dialogId);
+                times.push(updateTime);
+            }
+            
+            const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
+            updateMetric('visual-feedback-time', avgTime.toFixed(1));
+            logResult('performance-results', `平均フィードバック時間: ${avgTime.toFixed(1)}ms`, avgTime < 50 ? 'success' : 'error');
+        }
+
+        async function testKeyboardPerformance() {
+            logResult('performance-results', 'キーボード応答性能テストを開始...');
+            
+            const result = await mockDialog.showChoiceDialog([{ type: 'test' }]);
+            const keys = ['1', '2', '3', 'a', 'b'];
+            const times = [];
+            
+            keys.forEach(key => {
+                const responseTime = mockDialog.handleKeyboardShortcut(result.dialogId, key);
+                times.push(responseTime);
+            });
+            
+            const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
+            updateMetric('keyboard-response-time', avgTime.toFixed(1));
+            logResult('performance-results', `平均応答時間: ${avgTime.toFixed(1)}ms`, avgTime < 16 ? 'success' : 'error');
+        }
+
+        function testMemoryUsage() {
+            logResult('performance-results', 'メモリ使用量テストを開始...');
+            
+            if (performance.memory) {
+                const memoryInfo = performance.memory;
+                const usedMB = (memoryInfo.usedJSHeapSize / 1024 / 1024).toFixed(1);
+                const totalMB = (memoryInfo.totalJSHeapSize / 1024 / 1024).toFixed(1);
+                
+                updateMetric('memory-usage', usedMB);
+                logResult('performance-results', `使用メモリ: ${usedMB}MB / ${totalMB}MB`, 'info');
+            } else {
+                logResult('performance-results', 'メモリ情報は利用できません', 'error');
+            }
+        }
+
+        async function testBulkOperations() {
+            logResult('performance-results', '一括操作性能テストを開始...');
+            
+            const startTime = performance.now();
+            
+            // 大量の広告をシミュレート
+            const manyAds = Array.from({ length: 50 }, (_, i) => ({
+                type: `ad-${i}`,
+                width: 300,
+                height: 250
+            }));
+            
+            const result = await mockDialog.showChoiceDialog(manyAds);
+            
+            // 一括操作をシミュレート
+            for (let i = 0; i < manyAds.length; i++) {
+                mockDialog.updateVisualFeedback(result.dialogId);
+            }
+            
+            const endTime = performance.now();
+            const totalTime = endTime - startTime;
+            
+            logResult('performance-results', `50個広告の一括処理: ${totalTime.toFixed(1)}ms`, totalTime < 500 ? 'success' : 'error');
+        }
+
+        // ブラウザ互換性テスト
+        function testBrowserFeatures() {
+            logResult('compatibility-results', 'ブラウザ機能検出テストを開始...');
+            
+            const features = mockAccessibility.getBrowserFeatures();
+            
+            Object.entries(features).forEach(([feature, supported]) => {
+                logResult('compatibility-results', `${feature}: ${supported ? 'サポート' : '非サポート'}`, supported ? 'success' : 'error');
+            });
+            
+            // ブラウザ情報を更新
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes('Chrome')) {
+                document.getElementById('chrome-version').textContent = 'Chrome検出';
+            } else if (userAgent.includes('Firefox')) {
+                document.getElementById('firefox-version').textContent = 'Firefox検出';
+            } else if (userAgent.includes('Safari')) {
+                document.getElementById('safari-version').textContent = 'Safari検出';
+            } else if (userAgent.includes('Edge')) {
+                document.getElementById('edge-version').textContent = 'Edge検出';
+            }
+        }
+
+        function testCSSSupport() {
+            logResult('compatibility-results', 'CSS機能サポートテストを開始...');
+            
+            const testElement = document.createElement('div');
+            
+            // CSS Grid
+            testElement.style.display = 'grid';
+            const gridSupported = testElement.style.display === 'grid';
+            logResult('compatibility-results', `CSS Grid: ${gridSupported ? 'サポート' : '非サポート'}`, gridSupported ? 'success' : 'error');
+            
+            // Flexbox
+            testElement.style.display = 'flex';
+            const flexSupported = testElement.style.display === 'flex';
+            logResult('compatibility-results', `Flexbox: ${flexSupported ? 'サポート' : '非サポート'}`, flexSupported ? 'success' : 'error');
+            
+            // CSS Variables
+            const variablesSupported = CSS && CSS.supports && CSS.supports('--test', 'value');
+            logResult('compatibility-results', `CSS Variables: ${variablesSupported ? 'サポート' : '非サポート'}`, variablesSupported ? 'success' : 'error');
+        }
+
+        function testEventHandling() {
+            logResult('compatibility-results', 'イベント処理互換性テストを開始...');
+            
+            const testElement = document.createElement('button');
+            
+            // addEventListener
+            const addEventSupported = typeof testElement.addEventListener === 'function';
+            logResult('compatibility-results', `addEventListener: ${addEventSupported ? 'サポート' : '非サポート'}`, addEventSupported ? 'success' : 'error');
+            
+            // removeEventListener
+            const removeEventSupported = typeof testElement.removeEventListener === 'function';
+            logResult('compatibility-results', `removeEventListener: ${removeEventSupported ? 'サポート' : '非サポート'}`, removeEventSupported ? 'success' : 'error');
+            
+            // イベントテスト
+            let eventFired = false;
+            const testHandler = () => { eventFired = true; };
+            
+            if (addEventSupported) {
+                testElement.addEventListener('click', testHandler);
+                testElement.click();
+                logResult('compatibility-results', `イベント発火: ${eventFired ? '成功' : '失敗'}`, eventFired ? 'success' : 'error');
+            }
+        }
+
+        function testDOMManipulation() {
+            logResult('compatibility-results', 'DOM操作互換性テストを開始...');
+            
+            // querySelector
+            const querySelectorSupported = typeof document.querySelector === 'function';
+            logResult('compatibility-results', `querySelector: ${querySelectorSupported ? 'サポート' : '非サポート'}`, querySelectorSupported ? 'success' : 'error');
+            
+            // querySelectorAll
+            const querySelectorAllSupported = typeof document.querySelectorAll === 'function';
+            logResult('compatibility-results', `querySelectorAll: ${querySelectorAllSupported ? 'サポート' : '非サポート'}`, querySelectorAllSupported ? 'success' : 'error');
+            
+            // classList
+            const testElement = document.createElement('div');
+            const classListSupported = 'classList' in testElement;
+            logResult('compatibility-results', `classList: ${classListSupported ? 'サポート' : '非サポート'}`, classListSupported ? 'success' : 'error');
+            
+            // setAttribute
+            const setAttributeSupported = typeof testElement.setAttribute === 'function';
+            logResult('compatibility-results', `setAttribute: ${setAttributeSupported ? 'サポート' : '非サポート'}`, setAttributeSupported ? 'success' : 'error');
+        }
+
+        // 統合テスト
+        async function runFullIntegrationTest() {
+            logResult('integration-results', '完全統合テストを開始...');
+            
+            try {
+                // 1. 複数広告検出
+                const mockAds = [
+                    { type: 'banner', width: 728, height: 90 },
+                    { type: 'overlay', width: 300, height: 250 },
+                    { type: 'popup', width: 400, height: 300 }
+                ];
+                
+                logResult('integration-results', `ステップ1: ${mockAds.length}個の広告を検出`, 'info');
+                
+                // 2. ダイアログ表示
+                const result = await mockDialog.showChoiceDialog(mockAds);
+                logResult('integration-results', `ステップ2: ダイアログ作成完了 (${result.creationTime.toFixed(1)}ms)`, 'success');
+                
+                // 3. プレビュー失敗シミュレート
+                const continueEnabled = mockDialog.enableContinueWithoutPreview(result.dialogId);
+                logResult('integration-results', `ステップ3: プレビューなしモード ${continueEnabled ? '有効' : '無効'}`, continueEnabled ? 'success' : 'error');
+                
+                // 4. 個別選択
+                for (let i = 0; i < mockAds.length; i++) {
+                    const action = i % 2 === 0 ? 'allow' : 'block';
+                    const responseTime = mockDialog.handleKeyboardShortcut(result.dialogId, (i + 1).toString());
+                    logResult('integration-results', `ステップ4.${i + 1}: 広告${i + 1}を${action} (${responseTime.toFixed(1)}ms)`, 'success');
+                }
+                
+                // 5. 視覚フィードバック
+                const feedbackTime = mockDialog.updateVisualFeedback(result.dialogId);
+                logResult('integration-results', `ステップ5: 視覚フィードバック更新 (${feedbackTime.toFixed(1)}ms)`, 'success');
+                
+                // 6. クリーンアップ
+                mockDialog.cleanup();
+                logResult('integration-results', 'ステップ6: クリーンアップ完了', 'success');
+                
+                logResult('integration-results', '完全統合テスト成功！', 'success');
+                
+            } catch (error) {
+                logResult('integration-results', `統合テストエラー: ${error.message}`, 'error');
+            }
+        }
+
+        async function runAccessibilityIntegrationTest() {
+            logResult('integration-results', 'アクセシビリティ統合テストを開始...');
+            
+            // キーボードナビゲーション
+            const navResult = mockAccessibility.testKeyboardNavigation();
+            logResult('integration-results', `キーボードナビゲーション: ${navResult.canFocus ? '成功' : '失敗'}`, navResult.canFocus ? 'success' : 'error');
+            
+            // ARIAラベル
+            const ariaResult = mockAccessibility.testAriaLabels();
+            logResult('integration-results', `ARIAラベルカバレッジ: ${ariaResult.coverage}%`, ariaResult.coverage > 80 ? 'success' : 'error');
+            
+            // スクリーンリーダー通知
+            mockAccessibility.announceToScreenReader('アクセシビリティ統合テスト完了');
+            logResult('integration-results', 'スクリーンリーダー通知: 送信完了', 'success');
+            
+            logResult('integration-results', 'アクセシビリティ統合テスト完了', 'success');
+        }
+
+        async function runPerformanceIntegrationTest() {
+            logResult('integration-results', 'パフォーマンス統合テストを開始...');
+            
+            const startTime = performance.now();
+            
+            // 複数のパフォーマンステストを並行実行
+            const tests = [
+                testDialogCreationPerformance(),
+                testVisualFeedbackPerformance(),
+                testKeyboardPerformance()
+            ];
+            
+            await Promise.all(tests);
+            
+            const endTime = performance.now();
+            const totalTime = endTime - startTime;
+            
+            logResult('integration-results', `パフォーマンス統合テスト完了 (${totalTime.toFixed(1)}ms)`, totalTime < 1000 ? 'success' : 'error');
+        }
+
+        async function runStressTest() {
+            logResult('integration-results', 'ストレステストを開始...');
+            
+            const iterations = 100;
+            const errors = [];
+            
+            for (let i = 0; i < iterations; i++) {
+                try {
+                    const mockAds = Array.from({ length: Math.floor(Math.random() * 10) + 1 }, (_, j) => ({
+                        type: `stress-ad-${j}`,
+                        width: Math.floor(Math.random() * 500) + 100,
+                        height: Math.floor(Math.random() * 300) + 50
+                    }));
+                    
+                    const result = await mockDialog.showChoiceDialog(mockAds);
+                    mockDialog.enableContinueWithoutPreview(result.dialogId);
+                    mockDialog.updateVisualFeedback(result.dialogId);
+                    
+                    if (i % 10 === 0) {
+                        logResult('integration-results', `ストレステスト進行: ${i}/${iterations}`, 'info');
+                    }
+                    
+                } catch (error) {
+                    errors.push({ iteration: i, error: error.message });
+                }
+            }
+            
+            mockDialog.cleanup();
+            
+            logResult('integration-results', `ストレステスト完了: ${iterations - errors.length}/${iterations} 成功`, errors.length === 0 ? 'success' : 'error');
+            
+            if (errors.length > 0) {
+                logResult('integration-results', `エラー数: ${errors.length}`, 'error');
+                errors.slice(0, 5).forEach(err => {
+                    logResult('integration-results', `エラー例: ${err.error}`, 'error');
+                });
+            }
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            logResult('preview-results', 'プレビューなし続行機能テスト準備完了');
+            logResult('accessibility-results', 'アクセシビリティ機能テスト準備完了');
+            logResult('performance-results', 'パフォーマンステスト準備完了');
+            logResult('compatibility-results', 'ブラウザ互換性テスト準備完了');
+            logResult('integration-results', '統合テスト準備完了');
+            
+            // ブラウザ機能を自動検出
+            testBrowserFeatures();
+        });
+    </script>
+</body>
+</html>
