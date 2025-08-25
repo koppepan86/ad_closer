@@ -1241,6 +1241,85 @@
   // グローバルエクスポート
   global.PopupDetector = PopupDetector;
   console.log('PopupDetector class exported to global scope');
+  
+  // テスト用のanalyzePopup関数をグローバルスコープにエクスポート
+  global.analyzePopup = function(element) {
+    if (!element) {
+      throw new Error('Element is required');
+    }
+    
+    try {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      
+      // 基本的な特性を分析
+      const characteristics = {
+        position: style.position,
+        zIndex: parseInt(style.zIndex) || 0,
+        dimensions: {
+          width: rect.width,
+          height: rect.height
+        },
+        coordinates: {
+          top: rect.top,
+          left: rect.left
+        },
+        isVisible: style.display !== 'none' && 
+                  style.visibility !== 'hidden' && 
+                  parseFloat(style.opacity) > 0,
+        hasBoxShadow: style.boxShadow !== 'none',
+        hasBorder: style.border !== 'none' && style.borderWidth !== '0px',
+        opacity: parseFloat(style.opacity) || 1
+      };
+      
+      // 信頼度スコアを計算
+      let confidence = 0;
+      
+      // 固定位置または絶対位置
+      if (characteristics.position === 'fixed' || characteristics.position === 'absolute') {
+        confidence += 0.3;
+      }
+      
+      // 高いz-index
+      if (characteristics.zIndex > 1000) {
+        confidence += 0.3;
+      }
+      
+      // ボックスシャドウ
+      if (characteristics.hasBoxShadow) {
+        confidence += 0.2;
+      }
+      
+      // ボーダー
+      if (characteristics.hasBorder) {
+        confidence += 0.1;
+      }
+      
+      // サイズが適切
+      if (characteristics.dimensions.width > 200 && characteristics.dimensions.height > 100) {
+        confidence += 0.1;
+      }
+      
+      // 信頼度を0-1の範囲に正規化
+      confidence = Math.min(confidence, 1.0);
+      
+      return {
+        characteristics,
+        confidence,
+        element,
+        timestamp: Date.now()
+      };
+      
+    } catch (error) {
+      console.error('analyzePopup error:', error);
+      return {
+        characteristics: {},
+        confidence: 0,
+        element,
+        error: error.message
+      };
+    }
+  };
 
   // 自動初期化（オプション）
   if (!global.popupDetector) {

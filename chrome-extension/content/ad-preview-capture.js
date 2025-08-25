@@ -1057,11 +1057,21 @@ class AdPreviewCapture {
     let processElements = elements;
     if (elements.length > maxElementsForTarget && maxElementsForTarget > 0) {
       processElements = this.prioritizeElements(elements, maxElementsForTarget);
-      this.logWarning('Element count limited for performance', {
-        originalCount: elements.length,
-        limitedCount: processElements.length,
-        estimatedTime: estimatedTimePerElement * processElements.length
-      });
+      
+      // パフォーマンス制限の詳細ログ
+      if (this.options.debugMode) {
+        this.logWarning(`Element count limited for performance: ${elements.length} → ${processElements.length} elements`, {
+          originalCount: elements.length,
+          limitedCount: processElements.length,
+          estimatedTime: estimatedTimePerElement * processElements.length,
+          targetTime: targetTime,
+          estimatedTimePerElement: estimatedTimePerElement,
+          reason: 'Performance optimization to meet target processing time'
+        });
+      } else {
+        // 本番環境では簡潔な情報ログ
+        this.logDebug(`Processing ${processElements.length}/${elements.length} elements for performance`);
+      }
     }
 
     // 並列処理の制限とタイムアウト設定
@@ -1461,7 +1471,7 @@ class AdPreviewCapture {
     targetCanvas.width = targetWidth;
     targetCanvas.height = targetHeight;
 
-    const ctx = targetCanvas.getContext('2d');
+    const ctx = targetCanvas.getContext('2d', { willReadFrequently: true });
     
     // 高品質レンダリング設定
     ctx.imageSmoothingEnabled = true;
@@ -1509,7 +1519,7 @@ class AdPreviewCapture {
       stepCanvas.width = stepWidth;
       stepCanvas.height = stepHeight;
       
-      const stepCtx = stepCanvas.getContext('2d');
+      const stepCtx = stepCanvas.getContext('2d', { willReadFrequently: true });
       stepCtx.imageSmoothingEnabled = true;
       stepCtx.imageSmoothingQuality = 'high';
       stepCtx.drawImage(currentCanvas, 0, 0, stepWidth, stepHeight);
@@ -1647,7 +1657,7 @@ class AdPreviewCapture {
    */
   analyzeImageComplexity(canvas) {
     try {
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const imageData = ctx.getImageData(0, 0, Math.min(canvas.width, 100), Math.min(canvas.height, 100));
       const data = imageData.data;
       
@@ -1809,7 +1819,7 @@ class AdPreviewCapture {
     canvas.width = this.options.thumbnailWidth;
     canvas.height = this.options.thumbnailHeight;
     
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     
     // 背景
     ctx.fillStyle = '#f5f5f5';
@@ -2232,15 +2242,74 @@ class AdPreviewCapture {
   }
 
   /**
+   * 要素を優先度順に並び替えて制限
+   * @param {HTMLElement[]} elements - 対象要素配列
+   * @param {number} maxCount - 最大要素数
+   * @returns {HTMLElement[]} 優先度順に制限された要素配列
+   */
+  prioritizeElements(elements, maxCount) {
+    if (elements.length <= maxCount) {
+      return elements;
+    }
+
+    // 要素の優先度を計算
+    const prioritizedElements = elements.map(element => {
+      const rect = element.getBoundingClientRect();
+      const computedStyle = window.getComputedStyle(element);
+      
+      let priority = 0;
+      
+      // サイズによる優先度（大きい要素ほど高い）
+      const area = rect.width * rect.height;
+      priority += Math.min(area / 10000, 10); // 最大10ポイント
+      
+      // 可視性による優先度
+      if (rect.width > 0 && rect.height > 0 && computedStyle.display !== 'none') {
+        priority += 5;
+      }
+      
+      // z-indexによる優先度（高いz-indexほど高い）
+      const zIndex = parseInt(computedStyle.zIndex) || 0;
+      if (zIndex > 0) {
+        priority += Math.min(zIndex / 100, 3); // 最大3ポイント
+      }
+      
+      // 画面中央に近いほど高い優先度
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const elementCenterX = rect.left + rect.width / 2;
+      const elementCenterY = rect.top + rect.height / 2;
+      const distanceFromCenter = Math.sqrt(
+        Math.pow(elementCenterX - centerX, 2) + Math.pow(elementCenterY - centerY, 2)
+      );
+      const maxDistance = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
+      priority += (1 - distanceFromCenter / maxDistance) * 2; // 最大2ポイント
+      
+      return { element, priority };
+    });
+
+    // 優先度順にソートして上位maxCount個を返す
+    return prioritizedElements
+      .sort((a, b) => b.priority - a.priority)
+      .slice(0, maxCount)
+      .map(item => item.element);
+  }
+
+  /**
    * 警告ログ出力
    * @param {string} message - ログメッセージ
    * @param {Object} data - ログデータ
    */
   logWarning(message, data = {}) {
-    console.warn(`[AdPreviewCapture:WARNING] ${message}`, {
-      timestamp: new Date().toISOString(),
-      ...data
-    });
+    if (this.options.debugMode) {
+      console.warn(`[AdPreviewCapture:WARNING] ${message}`, {
+        timestamp: new Date().toISOString(),
+        ...data
+      });
+    } else {
+      // 本番環境では簡潔なメッセージのみ
+      console.warn(`[AdPreviewCapture:WARNING] ${message}`);
+    }
   }
 
   /**

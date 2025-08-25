@@ -533,11 +533,18 @@ describe('バックグラウンドサービスワーカー', () => {
       async broadcastToAllTabs(message) {
         const tabs = await chrome.tabs.query({});
         
-        const promises = tabs.map(tab => 
-          chrome.tabs.sendMessage(tab.id, message).catch(() => {
-            // エラーは無視（コンテンツスクリプトがない場合など）
-          })
-        );
+        const promises = tabs.map(tab => {
+          try {
+            const result = chrome.tabs.sendMessage(tab.id, message);
+            // Promiseでない場合はPromise.resolveでラップ
+            return Promise.resolve(result).catch(() => {
+              // エラーは無視（コンテンツスクリプトがない場合など）
+            });
+          } catch (error) {
+            // 同期エラーもキャッチ
+            return Promise.resolve();
+          }
+        });
         
         await Promise.all(promises);
       },

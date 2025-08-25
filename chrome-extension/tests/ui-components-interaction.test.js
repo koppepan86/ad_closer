@@ -4,12 +4,18 @@
  */
 
 // DOM環境のモック
+const mockGetElementById = jest.fn();
+const mockQuerySelector = jest.fn();
+const mockQuerySelectorAll = jest.fn();
+const mockCreateElement = jest.fn();
+const mockAddEventListener = jest.fn();
+
 global.document = {
-  getElementById: jest.fn(),
-  querySelector: jest.fn(),
-  querySelectorAll: jest.fn(),
-  createElement: jest.fn(),
-  addEventListener: jest.fn(),
+  getElementById: mockGetElementById,
+  querySelector: mockQuerySelector,
+  querySelectorAll: mockQuerySelectorAll,
+  createElement: mockCreateElement,
+  addEventListener: mockAddEventListener,
   body: { appendChild: jest.fn() }
 };
 
@@ -59,7 +65,7 @@ describe('UIコンポーネントインタラクションと状態管理', () =>
       toggleSlider: createMockElement('div', { setAttribute: jest.fn() })
     };
 
-    document.getElementById.mockImplementation((id) => mockElements[id] || null);
+    mockGetElementById.mockImplementation((id) => mockElements[id] || null);
 
     // Chrome tabs API のモック
     chrome.tabs.query.mockResolvedValue([{

@@ -120,13 +120,19 @@ function createChromeApiMock() {
   // ストレージモックの実装
   mockStorage.get.mockImplementation((keys) => {
     const result = {};
+    
+    if (!keys) {
+      // keysがnullまたはundefinedの場合、すべてのデータを返す
+      return Promise.resolve({ ...mockStorage.data });
+    }
+    
     if (Array.isArray(keys)) {
       keys.forEach(key => {
         result[key] = mockStorage.data[key];
       });
     } else if (typeof keys === 'string') {
       result[keys] = mockStorage.data[keys];
-    } else if (typeof keys === 'object') {
+    } else if (typeof keys === 'object' && keys !== null) {
       Object.keys(keys).forEach(key => {
         result[key] = mockStorage.data[key] || keys[key];
       });
@@ -198,11 +204,13 @@ function createChromeApiMock() {
  * @returns {Object} ポップアップデータ
  */
 function createMockPopupData(overrides = {}) {
+  const now = Date.now();
   return {
-    id: 'popup_test_' + Date.now(),
+    id: 'popup_test_' + now,
     url: 'https://example.com/page',
     domain: 'example.com',
-    timestamp: Date.now(),
+    timestamp: now,
+    decisionTimestamp: now, // 必須フィールドを追加
     characteristics: {
       hasCloseButton: true,
       containsAds: true,
@@ -211,7 +219,7 @@ function createMockPopupData(overrides = {}) {
       zIndex: 9999,
       dimensions: { width: 400, height: 300 }
     },
-    userDecision: 'pending',
+    userDecision: 'close', // デフォルトを有効な値に変更
     confidence: 0.8,
     ...overrides
   };

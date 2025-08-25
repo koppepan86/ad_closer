@@ -2033,12 +2033,24 @@ async function handlePopupDetection(popupData, sender) {
       return;
     }
 
-    // ホワイトリストドメインをチェック
+    // URL情報を取得
+    let url = null;
+    let hostname = null;
+    
     if (sender.tab?.url) {
-      const url = new URL(sender.tab.url);
+      try {
+        url = new URL(sender.tab.url);
+        hostname = url.hostname;
+      } catch (error) {
+        console.warn('Service Worker: Invalid URL:', sender.tab.url, error);
+      }
+    }
+
+    // ホワイトリストドメインをチェック
+    if (hostname) {
       const whitelistedDomains = preferences.whitelistedDomains || [];
-      if (whitelistedDomains.includes(url.hostname)) {
-        console.log('Service Worker: Whitelisted domain, skipping:', url.hostname);
+      if (whitelistedDomains.includes(hostname)) {
+        console.log('Service Worker: Whitelisted domain, skipping:', hostname);
         return;
       }
     }
@@ -2061,10 +2073,20 @@ async function handlePopupDetection(popupData, sender) {
       await recordUserDecision(popupData, sender.tab);
     }
 
+    // ポップアップレコードを作成
+    const popupRecord = {
+      ...popupData,
+      tabId: sender.tab?.id,
+      url: sender.tab?.url,
+      hostname: hostname,
+      timestamp: Date.now(),
+      processed: true
+    };
+
     // パターンベースの提案を取得
     const patternSuggestion = await getPatternBasedSuggestion(
       popupData.characteristics,
-      url.hostname
+      hostname
     );
 
     if (patternSuggestion) {
