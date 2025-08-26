@@ -12,9 +12,6 @@
     "http://*/*",
     "https://*/*"
   ],
-  "optional_permissions": [
-    "background"
-  ],
   "background": {
     "service_worker": "background/service-worker.js"
   },
@@ -25,29 +22,28 @@
         "https://*/*"
       ],
       "js": [
-        "debug-permissions.js",
         "utils/chrome-api-guard.js",
-        "utils/simple-permission-checker.js",
-        "utils/detection-throttler.js",
-        "utils/promise-error-handler.js",
         "utils/extension-context-guard.js",
         "utils/logger.js",
-        "utils/debug-interface.js",
-        "utils/performance-monitor.js",
-        "utils/user-feedback-system.js",
         "utils/error-handler.js",
         "utils/dom-error-handler.js",
         "utils/communication-error-handler.js",
         "utils/permission-error-handler.js",
+        "utils/promise-error-handler.js",
+        "utils/simple-permission-checker.js",
+        "utils/detection-throttler.js",
+        "utils/performance-monitor.js",
         "utils/user-action-detector.js",
-        "utils/logging-integration.js",
-        "libs/html2canvas.min.js",
-        "content/ad-preview-capture.js",
-        "content/popup-detector-safe.js",
-        "content/user-choice-dialog.js",
+        "utils/user-feedback-system.js",
         "utils/popup-detector-guard.js",
         "utils/component-recovery.js",
+        "utils/logging-integration.js",
+        "utils/debug-interface.js",
+        "libs/html2canvas.min.js",
         "content/performance-optimizer.js",
+        "content/popup-detector-safe.js",
+        "content/ad-preview-capture.js",
+        "content/user-choice-dialog.js",
         "content/spa-handler.js",
         "content/website-adaptations.js",
         "content/content-script-clean.js"
@@ -75,22 +71,11 @@
     {
       "resources": [
         "utils/chrome-api-guard.js",
-        "utils/simple-permission-checker.js",
-        "utils/popup-detector-guard.js",
-        "utils/detection-throttler.js",
-        "utils/promise-error-handler.js",
         "utils/extension-context-guard.js",
         "utils/logger.js",
-        "utils/debug-interface.js",
-        "utils/performance-monitor.js",
-        "utils/user-feedback-system.js",
         "utils/error-handler.js",
-        "utils/dom-error-handler.js",
-        "utils/communication-error-handler.js",
-        "utils/permission-error-handler.js",
-        "utils/user-action-detector.js",
-        "utils/component-recovery.js",
-        "utils/logging-integration.js"
+        "utils/popup-detector-guard.js",
+        "utils/component-recovery.js"
       ],
       "matches": [
         "<all_urls>"
